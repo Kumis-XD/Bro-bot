@@ -3,7 +3,8 @@ import axios from "axios";
 export default {
 	command: ".igdl",
 	name: "「 INSTAGRAM DOWNLOADS 」",
-	description: "Download video Instagram dan mengirimkannya.",
+	description:
+		"Download video atau gambar dari Instagram dan mengirimkannya.",
 	execute: async (sock, sender, text, msg) => {
 		try {
 			// Gunakan regex untuk mengambil URL setelah perintah
@@ -19,11 +20,11 @@ export default {
 			}
 
 			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil video...",
+				text: "⏳ Tunggu sebentar, sedang mengambil media...",
 			});
 
-			// Ambil data dari API SiputzX
-			const apiUrl = `https://api.siputzx.my.id/api/d/igdl?url=${encodeURIComponent(
+			// Ambil data dari API SuraWeb
+			const apiUrl = `https://api.suraweb.online/download/instagram?url=${encodeURIComponent(
 				url,
 			)}`;
 			const response = await axios.get(apiUrl);
@@ -37,29 +38,29 @@ export default {
 			}
 
 			// Ambil data dari respons API
-			const mediaList = response.data.data;
+			const { title, thumbnail, downloadUrls } = response.data.data;
 
 			// Jika tidak ada media yang dapat diunduh
-			if (!mediaList || mediaList.length === 0) {
+			if (!downloadUrls || downloadUrls.length === 0) {
 				await sock.sendMessage(sender, {
 					text: "⚠️ Tidak ditemukan media yang dapat diunduh!",
 				});
 				return;
 			}
 
-			// Kirim setiap video satu per satu
-			for (const media of mediaList) {
+			// Kirim setiap media (video/gambar) satu per satu
+			for (const mediaUrl of downloadUrls) {
 				await sock.sendMessage(
 					sender,
 					{
-						video: { url: media.url },
+						video: { url: mediaUrl },
 						mimetype: "video/mp4",
-						caption: `🎥 *Instagram Video*`,
+						caption: `🎥 *${title}*`,
 						contextInfo: {
 							externalAdReply: {
 								title: "Instagram Video Downloader",
 								body: "Success By Bro-Bot",
-								thumbnailUrl: media.thumbnail,
+								thumbnailUrl: thumbnail,
 								sourceUrl: url,
 								mediaType: 1,
 								renderLargerThumbnail: true,

@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
 	command: ".ttdl",
 	name: "「 TikTok Downloader 」",
-	description: "Download video/audio dari TikTok",
+	description: "Download video dari TikTok tanpa watermark.",
 	execute: async (sock, sender, text, msg) => {
 		try {
 			// Gunakan regex untuk mengambil URL setelah perintah
@@ -18,62 +18,56 @@ export default {
 				return;
 			}
 
-			const apiUrl = `https://api.siputzx.my.id/api/tiktok?url=${encodeURIComponent(
-				url,
-			)}`;
-
 			await sock.sendMessage(sender, {
 				text: "⏳ Tunggu sebentar, sedang mengambil video...",
 			});
 
-			// Ambil data dari API menggunakan Axios
+			// Ambil data dari API SuraWeb
+			const apiUrl = `https://api.suraweb.online/download/tiktok?url=${encodeURIComponent(
+				url,
+			)}`;
 			const { data } = await axios.get(apiUrl);
 
-			// Cek apakah API berhasil mengambil data
-			if (!data.status || !data.data || !data.data.urls) {
-				throw new Error("Gagal mendapatkan data dari API.");
-			}
-
-			// Ambil daftar URL video
-			const videoUrls = data.data.urls;
-
-			if (!videoUrls || videoUrls.length === 0) {
+			// Jika request gagal atau tidak ada data
+			if (
+				!data.status ||
+				!data.data ||
+				!data.data.media ||
+				!data.data.media.video
+			) {
 				await sock.sendMessage(sender, {
-					text: "❌ Tidak ada video yang dapat diunduh!",
+					text: "❌ Gagal mengambil video! Coba link lain.",
 				});
 				return;
 			}
 
-			// Coba kirim video dari salah satu URL
-			let sent = false;
-			for (const videoUrl of videoUrls) {
-				try {
-					await sock.sendMessage(
-						sender,
-						{
-							video: { url: videoUrl },
-							mimetype: "video/mp4",
-							caption: "✅ Berhasil mengunduh video TikTok!",
-						},
-						{ quoted: msg },
-					);
-					sent = true;
-					break; // Berhenti jika berhasil mengirim
-				} catch (error) {
-					console.warn(
-						`⚠️ Gagal mengirim video dari URL: ${videoUrl}`,
-					);
-				}
-			}
+			// Ambil data dari respons API
+			const { nickname, profilePic } = data.data.author;
+			const videoUrl = data.data.media.video.nowm;
 
-			if (!sent) {
-				await sock.sendMessage(sender, {
-					text: "❌ Gagal mengunduh video dari semua sumber!",
-				});
-			}
+			// Kirim video ke pengguna
+			await sock.sendMessage(
+				sender,
+				{
+					video: { url: videoUrl },
+					mimetype: "video/mp4",
+					caption: `🎵 *Video TikTok*\n👤 *Pembuat:* ${nickname}`,
+					contextInfo: {
+						externalAdReply: {
+							title: `Video dari ${nickname}`,
+							body: "Success By Bro-Bot",
+							thumbnailUrl: profilePic,
+							sourceUrl: url,
+							mediaType: 1,
+							renderLargerThumbnail: true,
+						},
+					},
+				},
+				{ quoted: msg },
+			);
 		} catch (error) {
-			console.error("❌ Error di Ttdl.js:", error);
-			sock.sendMessage(sender, {
+			console.error("❌ Error di ttdl.js:", error);
+			await sock.sendMessage(sender, {
 				text: "❌ Gagal mengunduh video. Coba lagi!",
 			});
 		}

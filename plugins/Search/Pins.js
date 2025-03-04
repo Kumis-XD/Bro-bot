@@ -3,25 +3,33 @@ import axios from "axios";
 export default {
 	command: ".pins",
 	name: "「 PINTEREST SEARCH 」",
-	description: "Mencari gambar dari pinterest",
+	description: "Mencari gambar dari Pinterest",
 	execute: async (sock, sender, text, msg) => {
 		try {
 			const queryMatch = text.match(/^.pins\s+(.+)/);
 			const query = queryMatch ? queryMatch[1] : null;
 
-			// Cek apakah URL valid
+			// Cek apakah query valid
 			if (!query) {
 				await sock.sendMessage(sender, {
 					text: "⚠️ Harap masukkan query Pinterest!",
 				});
 				return;
 			}
+
+			// Ambil data dari API
 			const response = await axios.get(
-				`https://api.siputzx.my.id/api/s/pinterest?query=${encodeURIComponent(
+				`https://fastrestapis.fasturl.cloud/search/pinterest?name=${encodeURIComponent(
 					query,
 				)}`,
 			);
-			if (!response.data.status || !response.data.data.length) {
+
+			// Cek apakah response valid
+			if (
+				response.data.status !== 200 ||
+				!response.data.result ||
+				response.data.result.length === 0
+			) {
 				return sock.sendMessage(
 					sender,
 					{ text: "Tidak ada hasil ditemukan." },
@@ -29,26 +37,26 @@ export default {
 				);
 			}
 
-			const pins = response.data.data.map((pin) => ({
-				header: pin.grid_title || "No Title",
-				title: pin.created_at,
-				description: pin.link || "No Link",
-				id: `.pindl ${pin.pin}`,
+			const pins = response.data.result.map((pin) => ({
+				header: "Pinterest Image",
+				title: "Klik untuk melihat",
+				description: pin.link,
+				id: `.pindl ${pin.link}`,
 			}));
 
 			await sock.sendMessage(
 				sender,
 				{
-					image: { url: response.data.data[0].images_url },
+					image: { url: response.data.result[0].directLink },
 					contextInfo: {
 						externalAdReply: {
 							showAdAttribution: true,
 							mediaType: 1,
-							mediaUrl: response.data.data[0].pin,
+							mediaUrl: response.data.result[0].link,
 							title: "「 Padz x Bro Bot 」",
 							body: "Pinterest Search Result",
-							sourceUrl: response.data.data[0].pin,
-							thumbnailUrl: response.data.data[0].images_url,
+							sourceUrl: response.data.result[0].link,
+							thumbnailUrl: response.data.result[0].directLink,
 							renderLargerThumbnail: true,
 						},
 					},
