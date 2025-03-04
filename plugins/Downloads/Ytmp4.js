@@ -1,4 +1,3 @@
-import { getVideoInfo } from "hybrid-ytdl";
 import axios from "axios";
 
 export default {
@@ -22,61 +21,42 @@ export default {
 				text: "⏳ Tunggu sebentar, sedang mengambil informasi video...",
 			});
 
-			// Ambil informasi video
-			const videoInfo = await getVideoInfo(url);
-
 			// Ambil data video dari API eksternal
-			const { data: videoData } = await axios.get(
+			const { data: response } = await axios.get(
 				`https://linecloud.my.id/api/download/ytmp4?url=${url}`,
 			);
 
-			// Jika gagal mendapatkan informasi video
-			if (!videoData?.status) {
+			// Validasi respons dari API
+			if (!response?.status || !response?.data?.downloadLink) {
 				return await sock.sendMessage(sender, {
-					text: "⚠️ Gagal mendapatkan informasi video! Coba link lain.",
+					text: "⚠️ Gagal mendapatkan video! Coba link lain.",
 				});
 			}
 
-			// Jika gagal mendapatkan video
-			if (!videoData?.data?.downloadLink) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Gagal mengunduh video! Coba link lain.",
-				});
-			}
-
-			console.log(videoData?.data?.downloadLink);
-
-			// Pastikan semua data tersedia
-			const title = videoInfo.title || videoData?.data?.title || "Video";
-			const creator =
-				videoInfo.creator ||
-				videoData?.data?.channelTitle ||
-				"Tidak diketahui";
-			const duration = videoInfo.duration
-				? `${videoInfo.duration} detik`
-				: "Tidak diketahui";
-			const views = videoInfo.views
-				? videoInfo.views.toLocaleString()
-				: videoData?.data?.statistics?.viewCount || "Tidak diketahui";
-			const uploaded =
-				videoInfo.uploaded ||
-				videoData?.data?.publishedAt ||
-				"Tidak diketahui";
-			const thumbnail = videoData?.data?.thumbnails?.high?.url || null;
+			// Ambil detail video dari response API
+			const videoData = response.data;
+			const title = videoData.title || "Video";
+			const creator = videoData.channelTitle || "Tidak diketahui";
+			const duration = videoData.duration || "Tidak diketahui";
+			const views = videoData.statistics?.viewCount || "Tidak diketahui";
+			const uploaded = videoData.publishedAt || "Tidak diketahui";
+			const thumbnail =
+				videoData.thumbnails?.high?.url ||
+				videoData.thumbnails?.default?.url;
 
 			// Kirim informasi video ke pengguna
 			const caption =
 				`🎬 *Informasi Video YouTube*\n\n` +
 				`📌 *Judul:* ${title}\n` +
 				`👤 *Creator:* ${creator}\n` +
-				`⏳ *Durasi:* ${duration}\n` +
+				`⏳ *Durasi:* ${duration} detik\n` +
 				`👀 *Views:* ${views}\n` +
 				`🕒 *Diunggah:* ${uploaded}\n`;
 
 			await sock.sendMessage(
 				sender,
 				{
-					video: { url: videoData?.data?.downloadLink },
+					video: { url: videoData.downloadLink },
 					mimetype: "video/mp4",
 					caption: caption,
 					fileName: `${title}.mp4`,

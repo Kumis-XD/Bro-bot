@@ -33,26 +33,29 @@ export default {
 				});
 			}
 
-			console.log(audioData?.data?.download);
-
 			// Ambil informasi dari API
-			const title = audioData.data.title || "Audio";
-			const creator = audioData.data.channelTitle || "Tidak diketahui";
-			const thumbnail = audioData.data.thumbnails?.high?.url || null;
-			const downloadURL = audioData.data.download;
+			const { title, channelTitle, thumbnails, download } =
+				audioData.data;
+			const thumbnail =
+				thumbnails?.high?.url ||
+				thumbnails?.standard?.url ||
+				thumbnails?.medium?.url ||
+				null;
+
+			console.log("🔗 Link Download:", download);
 
 			// Kirim audio ke pengguna
 			await sock.sendMessage(
 				sender,
 				{
-					audio: { url: downloadURL },
+					audio: { url: download },
 					mimetype: "audio/mpeg",
-					fileName: `${title}.mp3`,
+					fileName: `${title || "Audio"}.mp3`,
 					contextInfo: {
 						externalAdReply: {
 							showAdAttribution: true,
-							title: title,
-							body: creator,
+							title: title || "Audio YouTube",
+							body: channelTitle || "Tidak diketahui",
 							...(thumbnail ? { thumbnailUrl: thumbnail } : {}),
 							renderLargerThumbnail: true,
 							mediaType: 1,
@@ -64,7 +67,7 @@ export default {
 				{ quoted: msg },
 			);
 		} catch (error) {
-			console.error("❌ Error:", error);
+			console.error("❌ Error:", error?.message || error);
 			await sock.sendMessage(sender, {
 				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
 			});
