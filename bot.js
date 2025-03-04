@@ -888,4 +888,37 @@ async function botSetting() {
 	startBot().catch((err) => console.error("❌ Error:", err));
 }
 
-botSetting().catch((err) => console.error("❌ Error:", err));
+async function checkJsonFiles(folderPath, requiredFiles) {
+	const missingFiles = [];
+
+	requiredFiles.forEach((file) => {
+		const filePath = path.join(folderPath, file);
+		if (!fs.existsSync(filePath)) {
+			missingFiles.push(file);
+		}
+	});
+
+	if (missingFiles.length === 0) {
+		console.log("✅ Semua file JSON tersedia.");
+		await startBot().catch((err) => console.error("❌ Error:", err));
+	} else {
+		console.log("⚠️ Beberapa file JSON hilang:");
+		missingFiles.forEach((file) => console.log(`- ❌ ${file}`));
+
+		await botSetting().catch((err) => console.error("❌ Error:", err));
+	}
+}
+
+// Daftar file JSON yang harus ada
+const jsonFiles = [
+	"antilink.json",
+	"antimedia.json",
+	"antispam.json",
+	"autoai.json",
+	"autoread.json",
+	"autosholat.json",
+	"city.json",
+];
+
+// Jalankan pengecekan
+checkJsonFiles("./data", jsonFiles);
