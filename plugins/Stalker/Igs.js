@@ -14,7 +14,7 @@ export default {
 			);
 		}
 
-		const apiUrl = `https://api.siputzx.my.id/api/stalk/Instagram?user=${encodeURIComponent(
+		const apiUrl = `https://api.vreden.my.id/api/igstalk?query=${encodeURIComponent(
 			args[1],
 		)}`;
 
@@ -22,7 +22,7 @@ export default {
 			const response = await axios.get(apiUrl);
 			const json = response.data;
 
-			if (!json.status || !json.data || !json.data.user) {
+			if (!json.status || !json.result || !json.result.user) {
 				return await sock.sendMessage(
 					sender,
 					{
@@ -32,14 +32,14 @@ export default {
 				);
 			}
 
-			const user = json.data.user;
+			const user = json.result.user;
 
 			let infoText =
 				`🔍 *Instagram Profile Stalk*\n\n` +
-				`👤 *Username:* ${user.username}\n` +
-				`📛 *Nama Lengkap:* ${user.full_name}\n` +
+				`👤 *Username:* ${args[1]}\n` +
+				`📛 *Nama Lengkap:* ${user.full_name || "Tidak ada"}\n` +
 				`📄 *Bio:* ${user.biography || "Tidak ada"}\n` +
-				`📌 *Kategori:* ${user.category || "Tidak ada"}\n` +
+				`📌 *Kategori:* ${user.account_category || "Tidak ada"}\n` +
 				`🔒 *Private:* ${user.is_private ? "✅" : "❌"}\n` +
 				`✔️ *Verified:* ${user.is_verified ? "✅" : "❌"}\n` +
 				`📊 *Followers:* ${user.follower_count}\n` +
@@ -51,7 +51,7 @@ export default {
 			await sock.sendMessage(
 				sender,
 				{
-					image: { url: user.hd_profile_pic.url },
+					image: { url: user.profile_pic_url_hd },
 					caption: infoText,
 				},
 				{ quoted: msg },
