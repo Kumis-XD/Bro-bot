@@ -148,7 +148,6 @@ export default {
 					".autosholat",
 					".autoread",
 					".antiopsi",
-					".ctoken",
 				].includes(command)
 			) {
 				categories.owner.push({
