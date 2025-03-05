@@ -31,9 +31,13 @@ export default {
 			}
 
 			// Kirim jawaban Joko ke pengguna
-			await sock.sendMessage(sender, {
-				text: `🤖 *Joko:* ${jokoResponse.data}`,
-			});
+			await sock.sendMessage(
+				sender,
+				{
+					text: jokoResponse.data,
+				},
+				{ quoted: msg },
+			);
 		} catch (error) {
 			console.error("❌ Error:", error?.message || error);
 			await sock.sendMessage(sender, {
