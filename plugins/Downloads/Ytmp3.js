@@ -18,30 +18,23 @@ export default {
 			}
 
 			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil informasi audio...",
+				text: "⏳ Tunggu sebentar, sedang mengambil audio...",
 			});
 
 			// Ambil data audio dari API eksternal
 			const { data: audioData } = await axios.get(
-				`https://linecloud.my.id/api/download/ytmp3?url=${url}`,
+				`https://api.siputzx.my.id/api/dl/youtube/mp3?url=${url}`,
 			);
 
 			// Validasi respons API
-			if (!audioData?.status || !audioData?.data?.download) {
+			if (!audioData?.status || !audioData?.data) {
 				return await sock.sendMessage(sender, {
 					text: "⚠️ Gagal mengunduh audio! Coba link lain.",
 				});
 			}
 
 			// Ambil informasi dari API
-			const { title, channelTitle, thumbnails, download } =
-				audioData.data;
-			const thumbnail =
-				thumbnails?.high?.url ||
-				thumbnails?.standard?.url ||
-				thumbnails?.medium?.url ||
-				null;
-
+			const download = audioData.data;
 			console.log("🔗 Link Download:", download);
 
 			// Kirim audio ke pengguna
@@ -50,19 +43,7 @@ export default {
 				{
 					audio: { url: download },
 					mimetype: "audio/mpeg",
-					fileName: `${title || "Audio"}.mp3`,
-					contextInfo: {
-						externalAdReply: {
-							showAdAttribution: true,
-							title: title || "Audio YouTube",
-							body: channelTitle || "Tidak diketahui",
-							...(thumbnail ? { thumbnailUrl: thumbnail } : {}),
-							renderLargerThumbnail: true,
-							mediaType: 1,
-							mediaUrl: url,
-							sourceUrl: url,
-						},
-					},
+					fileName: "YouTube_Audio.mp3",
 				},
 				{ quoted: msg },
 			);

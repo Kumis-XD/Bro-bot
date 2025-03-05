@@ -18,7 +18,7 @@ export default {
 			}
 
 			await sock.sendMessage(sender, {
-				text: `⏳ Sedang mencari lagu di *${query}* Spotify..."`
+				text: `⏳ Sedang mencari lagu *${query}* di Spotify..."`
 			});
 
 			// Ambil data lagu dari API eksternal
