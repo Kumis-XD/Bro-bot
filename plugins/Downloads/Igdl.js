@@ -23,13 +23,13 @@ export default {
 				text: "⏳ Tunggu sebentar, sedang mengambil media...",
 			});
 
-			// Ambil data dari API SuraWeb
-			const apiUrl = `https://api.suraweb.online/download/instagram?url=${encodeURIComponent(
+			// Ambil data dari API SiputzX
+			const apiUrl = `https://api.siputzx.my.id/api/d/igdl?url=${encodeURIComponent(
 				url,
 			)}`;
 			const response = await axios.get(apiUrl);
 
-			// Jika request gagal atau tidak ada data
+			// Validasi response
 			if (!response.data.status || !response.data.data) {
 				await sock.sendMessage(sender, {
 					text: "⚠️ Gagal mengambil media! Coba link lain.",
@@ -37,30 +37,45 @@ export default {
 				return;
 			}
 
-			// Ambil data dari respons API
-			const { title, thumbnail, downloadUrls } = response.data.data;
+			// Ambil daftar media dari response API
+			const mediaList = response.data.data;
 
-			// Jika tidak ada media yang dapat diunduh
-			if (!downloadUrls || downloadUrls.length === 0) {
+			// Jika tidak ada media yang ditemukan
+			if (!Array.isArray(mediaList) || mediaList.length === 0) {
 				await sock.sendMessage(sender, {
 					text: "⚠️ Tidak ditemukan media yang dapat diunduh!",
 				});
 				return;
 			}
 
-			// Kirim setiap media (video/gambar) satu per satu
-			for (const mediaUrl of downloadUrls) {
+			// Kirim setiap media (gambar/video) satu per satu
+			for (const media of mediaList) {
+				const { url: mediaUrl, thumbnail } = media;
+
+				const messageType = mediaUrl.endsWith(".mp4")
+					? "video"
+					: "image";
+
+				const mediaMessage =
+					messageType === "video"
+						? {
+								video: { url: mediaUrl },
+								mimetype: "video/mp4",
+						  }
+						: {
+								image: { url: mediaUrl },
+						  };
+
 				await sock.sendMessage(
 					sender,
 					{
-						video: { url: mediaUrl },
-						mimetype: "video/mp4",
-						caption: `🎥 *${title}*`,
+						...mediaMessage,
+						caption: "✅ *Instagram Download Success!*",
 						contextInfo: {
 							externalAdReply: {
-								title: "Instagram Video Downloader",
+								title: "Instagram Downloader",
 								body: "Success By Bro-Bot",
-								thumbnailUrl: thumbnail,
+								thumbnailUrl: thumbnail || mediaUrl,
 								sourceUrl: url,
 								mediaType: 1,
 								renderLargerThumbnail: true,
