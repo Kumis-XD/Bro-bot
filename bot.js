@@ -29,7 +29,6 @@ import { loadAntilink } from "./plugins/Bot/Antilink.js";
 import { loadAutoAI } from "./plugins/Bot/Autoai.js";
 import { schedulePrayerReminders } from "./functions/Fall.js";
 import { loadAntimedia } from "./plugins/Bot/Antimedia.js";
-import { checkTokenExpired } from "./functions/Fall.js";
 
 dotenv.config();
 
@@ -673,26 +672,6 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 		);
 
 		console.log(messageBox);
-
-		const userId2 = sender.includes("@g.us")
-			? msg.key.participant?.split("@")[0] || sender.split("@")[0]
-			: sender.split("@")[0];
-
-		const isOwner = userId2 === process.env.OWNER_NUMBER;
-
-		// Owner tidak perlu token
-		// if (!isOwner) {
-			const tokenStatus = checkTokenExpired(userId2);
-
-			// Jika token expired, minta pengguna memasukkan token baru
-			if (tokenStatus.expired) {
-				await sock.sendMessage(sender, {
-					text: `⚠️ ${tokenStatus.message}\n\nSilakan masukkan token baru untuk melanjutkan.`,
-				});
-
-				return; // Jangan lanjutkan eksekusi command jika token expired
-			}
-// 		}
 
 		// **Cek dan jalankan plugin jika cocok**
 		for (const plugin of plugins) {

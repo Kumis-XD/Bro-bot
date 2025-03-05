@@ -5,8 +5,6 @@ import fs from "fs";
 import path from "path";
 import schedule from "node-schedule";
 import ora from "ora"; // Import library untuk animasi loading
-import jwt from "jsonwebtoken";
-import { loadToken, saveToken } from "../plugins/Bot/Ctoken.js"; // Sesuaikan dengan path yang benar
 
 const prayerTimesCache = new Map(); // Cache untuk menyimpan waktu sholat per hari
 
@@ -17,45 +15,6 @@ const thumb = process.env.THUMBNAIL_URL;
 const botname = process.env.BOT_NAME;
 const ownername = process.env.OWNER_NAME;
 const desc = process.env.BOT_DESCRIPTION;
-
-// Fungsi untuk memeriksa apakah token sudah expired
-export const checkTokenExpired = (phoneNumber) => {
-	try {
-		// Muat token yang ada
-		const tokens = loadToken();
-
-		// Periksa apakah nomor ponsel ada di dalam data token
-		if (!tokens[phoneNumber]) {
-			return { expired: true, message: "Token tidak ditemukan!" };
-		}
-
-		// Ambil token dan expired date
-		const tokenData = tokens[phoneNumber];
-		const { token, expired, createdAt } = tokenData;
-
-		// Verifikasi token
-		const decoded = jwt.decode(token);
-
-		// Cek apakah token sudah expired
-		const currentTime = Math.floor(Date.now() / 1000); // Waktu sekarang dalam detik
-		const tokenExpiryTime = decoded.exp; // Waktu kedaluwarsa token dalam detik
-
-		if (currentTime > tokenExpiryTime) {
-			// Jika token sudah expired, hapus dari data
-			delete tokens[phoneNumber];
-			saveToken(tokens); // Simpan perubahan (hapus token yang expired)
-			return { expired: true, message: "Token sudah expired!" };
-		}
-
-		return { expired: false, message: "Token masih valid." };
-	} catch (error) {
-		console.error("❌ Error saat memeriksa token:", error);
-		return {
-			expired: true,
-			message: "Terjadi kesalahan saat memeriksa token!",
-		};
-	}
-};
 
 export const transcribe = async (url) => {
 	try {

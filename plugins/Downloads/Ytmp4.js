@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
 	command: ".ytmp4",
 	name: "「 YOUTUBE MP4 」",
-	description: "Mendapatkan informasi video YouTube dan mengunduhnya.",
+	description: "Mendapatkan video YouTube dan mengunduhnya.",
 	execute: async (sock, sender, text, msg) => {
 		try {
 			// Ambil URL dari args
@@ -18,7 +18,7 @@ export default {
 			}
 
 			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil informasi video...",
+				text: "⏳ Tunggu sebentar, sedang mengambil video...",
 			});
 
 			// Ambil data video dari API eksternal
