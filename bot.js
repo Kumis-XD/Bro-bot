@@ -676,7 +676,7 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 		const tokenInputMap = new Map();
 
-		// Dapatkan userId yang konsisten
+		// Dapatkan userId2 yang konsisten
 		const userId2 = sender.includes("@g.us")
 			? msg.key.participant?.split("@")[0] || sender.split("@")[0]
 			: sender.split("@")[0];
@@ -694,32 +694,41 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 			return;
 		}
 
-		// Cek apakah pengguna sedang dalam mode input token
+		// **Cek apakah pengguna sedang dalam mode input token**
 		if (tokenInputMap.has(userId2)) {
-			const newToken = text.trim(); // Ambil teks yang dikirim pengguna sebagai token baru
+			if (text.trim().startsWith("eyJ")) {
+				// Jika teks diawali "eyJ", anggap sebagai token
+				const newToken = text.trim();
 
-			// Validasi format token (bisa disesuaikan)
-			if (!newToken.startsWith("eyJ") || newToken.length < 20) {
+				// Validasi format token (bisa disesuaikan)
+				if (newToken.length < 20) {
+					await sock.sendMessage(sender, {
+						text: "⚠️ Token tidak valid! Silakan masukkan token yang benar.",
+					});
+					return;
+				}
+
+				// Simpan token baru
+				updateUserToken(userId2, newToken);
+
+				// Hapus pengguna dari daftar input token
+				tokenInputMap.delete(userId2);
+
 				await sock.sendMessage(sender, {
-					text: "⚠️ Token tidak valid! Silakan masukkan token yang benar.",
+					text: "✅ Token berhasil diperbarui! Anda sekarang dapat menggunakan perintah lagi.",
+				});
+
+				return;
+			} else {
+				// Jika pengguna dalam mode input token tetapi mengirim teks bukan token
+				await sock.sendMessage(sender, {
+					text: "⚠️ Anda sedang dalam mode input token. Silakan masukkan token yang benar.",
 				});
 				return;
 			}
-
-			// Simpan token baru
-			updateUserToken(userId2, newToken);
-
-			// Hapus pengguna dari daftar input token
-			tokenInputMap.delete(userId2);
-
-			await sock.sendMessage(sender, {
-				text: "✅ Token berhasil diperbarui! Anda sekarang dapat menggunakan perintah lagi.",
-			});
-
-			return;
 		}
 
-		// **Cek dan jalankan plugin jika cocok**
+		// **Jalankan perintah plugin jika teks bukan token dan pengguna tidak dalam mode input token**
 		for (const plugin of plugins) {
 			try {
 				if (
@@ -759,6 +768,7 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 					// Jika tidak ada pembatasan atau belum mencapai limit, eksekusi command
 					await plugin.execute(sock, sender, text, msg, quotd);
+					return;
 				}
 			} catch (err) {
 				console.error(`❌ Error di plugin ${plugin.command}:`, err);
