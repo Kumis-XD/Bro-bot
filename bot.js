@@ -263,7 +263,6 @@ async function startBot() {
 	console.log("📍 Kota untuk jadwal sholat:", city);
 
 	if (configSholat.autosholat) {
-		console.clear();
 		schedulePrayerReminders(sock, chatId, city);
 	}
 
