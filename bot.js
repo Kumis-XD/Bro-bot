@@ -677,11 +677,11 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 		const tokenInputMap = new Map();
 
 		// Dapatkan userId yang konsisten
-		const userId = sender.includes("@g.us")
+		const userId2 = sender.includes("@g.us")
 			? msg.key.participant?.split("@")[0] || sender.split("@")[0]
 			: sender.split("@")[0];
 
-		const tokenStatus = checkTokenExpired(userId);
+		const tokenStatus = checkTokenExpired(userId2);
 
 		// Jika token expired, minta pengguna memasukkan token baru
 		if (tokenStatus.expired) {
@@ -690,12 +690,12 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 			});
 
 			// Tandai pengguna dalam mode input token
-			tokenInputMap.set(userId, true);
+			tokenInputMap.set(userId2, true);
 			return;
 		}
 
 		// Cek apakah pengguna sedang dalam mode input token
-		if (tokenInputMap.has(userId)) {
+		if (tokenInputMap.has(userId2)) {
 			const newToken = text.trim(); // Ambil teks yang dikirim pengguna sebagai token baru
 
 			// Validasi format token (bisa disesuaikan)
@@ -707,10 +707,10 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 			}
 
 			// Simpan token baru
-			updateUserToken(userId, newToken);
+			updateUserToken(userId2, newToken);
 
 			// Hapus pengguna dari daftar input token
-			tokenInputMap.delete(userId);
+			tokenInputMap.delete(userId2);
 
 			await sock.sendMessage(sender, {
 				text: "✅ Token berhasil diperbarui! Anda sekarang dapat menggunakan perintah lagi.",
