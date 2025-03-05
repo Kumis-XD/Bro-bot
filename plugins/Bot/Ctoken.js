@@ -45,8 +45,8 @@ export const saveToken = (tokens) => {
 // Fungsi untuk membuat token JWT dengan nomor ponsel dan periode kadaluwarsa
 export default {
 	command: ".ctoken", // Perintah untuk membuat token JWT
-	name: "Create Token",
-	description: "Buat Token untuk aplikasi.",
+	name: "「 CREATE TOKEN 」",
+	description: "Buat Token untuk bot.",
 	execute: async (sock, sender, text, msg) => {
 		try {
 			// Pisahkan teks menjadi array berdasarkan spasi

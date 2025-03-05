@@ -84,7 +84,11 @@ export default {
 
 		// Fungsi untuk mengategorikan perintah
 		function categorizeCommand(command, name, description) {
-			if ([".ai", ".llama", ".blackbox", ".mistral"].includes(command)) {
+			if (
+				[".ai", ".llama", ".blackbox", ".mistral", ".joko"].includes(
+					command,
+				)
+			) {
 				categories.ai.push({
 					id: command,
 					title: name,
@@ -143,7 +147,8 @@ export default {
 					".cek",
 					".autosholat",
 					".autoread",
-					".antiopsi"
+					".antiopsi",
+					".ctoken",
 				].includes(command)
 			) {
 				categories.owner.push({
@@ -151,25 +156,8 @@ export default {
 					title: name,
 					description,
 				});
-			} else if (
-				[
-					".autoread",
-					".autosholat",
-					".cek",
-					".autoai",
-					".donasi",
-					".antispam",
-					".antiopsi",
-					".antimedia",
-				].includes(command)
-			) {
+			} else if ([".cek", ".donasi"].includes(command)) {
 				categories.bot.push({
-					id: command,
-					title: name,
-					description,
-				});
-			} else if ([".me", ".daftar"].includes(command)) {
-				categories.user.push({
 					id: command,
 					title: name,
 					description,
@@ -181,7 +169,7 @@ export default {
 					description,
 				});
 			} else if (
-				[".tourl", ".hd", ".rmbg", ".transc"].includes(command)
+				[".tourl", ".hd", ".rmbg", ".transc", ".brat"].includes(command)
 			) {
 				categories.tools.push({
 					id: command,
@@ -240,7 +228,8 @@ export default {
 		try {
 			ppUrl = await sock.profilePictureUrl(sender, "image");
 		} catch (err) {
-			ppUrl = "https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg";
+			ppUrl =
+				"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg";
 		}
 
 		// Kirim pesan dengan tombol interaktif
@@ -252,7 +241,8 @@ export default {
 					externalAdReply: {
 						showAdAttribution: true,
 						mediaType: 1,
-						mediaUrl: "https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
+						mediaUrl:
+							"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
 						title: "「 Padz x Bro Bot 」",
 						body: times.timeWIB,
 						sourceUrl: "",
@@ -276,7 +266,7 @@ export default {
 						buttonText: { displayText: "💰 Donasi" },
 						type: 1,
 					},
-          {
+					{
 						buttonId: "action",
 						buttonText: {
 							displayText: "ini pesan interactiveMeta",
