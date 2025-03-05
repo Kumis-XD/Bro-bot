@@ -674,61 +674,27 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 		console.log(messageBox);
 
-		const tokenInputMap = new Map();
-
-		// Dapatkan userId2 yang konsisten
 		const userId2 = sender.includes("@g.us")
 			? msg.key.participant?.split("@")[0] || sender.split("@")[0]
 			: sender.split("@")[0];
 
-		const tokenStatus = checkTokenExpired(userId2);
+		const isOwner = userId2 === process.env.OWNER_NUMBER;
 
-		// Jika token expired, minta pengguna memasukkan token baru
-		if (tokenStatus.expired) {
-			await sock.sendMessage(sender, {
-				text: `⚠️ ${tokenStatus.message}\n\nSilakan masukkan token baru untuk melanjutkan.`,
-			});
+		// Owner tidak perlu token
+		// if (!isOwner) {
+			const tokenStatus = checkTokenExpired(userId2);
 
-			// Tandai pengguna dalam mode input token
-			tokenInputMap.set(userId2, true);
-			return;
-		}
-
-		// **Cek apakah pengguna sedang dalam mode input token**
-		if (tokenInputMap.has(userId2)) {
-			if (text.trim().startsWith("eyJ")) {
-				// Jika teks diawali "eyJ", anggap sebagai token
-				const newToken = text.trim();
-
-				// Validasi format token (bisa disesuaikan)
-				if (newToken.length < 20) {
-					await sock.sendMessage(sender, {
-						text: "⚠️ Token tidak valid! Silakan masukkan token yang benar.",
-					});
-					return;
-				}
-
-				// Simpan token baru
-				updateUserToken(userId2, newToken);
-
-				// Hapus pengguna dari daftar input token
-				tokenInputMap.delete(userId2);
-
+			// Jika token expired, minta pengguna memasukkan token baru
+			if (tokenStatus.expired) {
 				await sock.sendMessage(sender, {
-					text: "✅ Token berhasil diperbarui! Anda sekarang dapat menggunakan perintah lagi.",
+					text: `⚠️ ${tokenStatus.message}\n\nSilakan masukkan token baru untuk melanjutkan.`,
 				});
 
-				return;
-			} else {
-				// Jika pengguna dalam mode input token tetapi mengirim teks bukan token
-				await sock.sendMessage(sender, {
-					text: "⚠️ Anda sedang dalam mode input token. Silakan masukkan token yang benar.",
-				});
-				return;
+				return; // Jangan lanjutkan eksekusi command jika token expired
 			}
-		}
+// 		}
 
-		// **Jalankan perintah plugin jika teks bukan token dan pengguna tidak dalam mode input token**
+		// **Cek dan jalankan plugin jika cocok**
 		for (const plugin of plugins) {
 			try {
 				if (
