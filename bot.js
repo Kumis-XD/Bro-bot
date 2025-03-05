@@ -675,33 +675,102 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 		console.log(messageBox);
 
+		const tokenInputMap = new Map();
+
+		// Jika token expired, minta pengguna memasukkan token baru
+		if (result.expired) {
+			await sock.sendMessage(sender, {
+				text: `⚠️ ${result.message}\n\nSilakan masukkan token baru untuk melanjutkan.`,
+			});
+
+			// Tambahkan pengguna ke daftar yang sedang memasukkan token
+			tokenInputMap.set(
+				sender.includes("@g.us")
+					? msg.key.participant.split("@")[0]
+					: sender.split("@")[0] === process.env.OWNER_NUMBER
+					? { expired: false }
+					: checkTokenExpired(
+							sender.includes("@g.us")
+								? msg.key.participant.split("@")[0]
+								: sender.split("@")[0],
+					  ),
+				true,
+			);
+			return;
+		}
+
+		// Cek apakah pengguna sedang dalam mode input token
+		if (
+			tokenInputMap.has(
+				sender.includes("@g.us")
+					? msg.key.participant.split("@")[0]
+					: sender.split("@")[0] === process.env.OWNER_NUMBER
+					? { expired: false }
+					: checkTokenExpired(
+							sender.includes("@g.us")
+								? msg.key.participant.split("@")[0]
+								: sender.split("@")[0],
+					  ),
+			)
+		) {
+			const newToken = text.trim(); // Ambil teks yang dikirim pengguna sebagai token baru
+
+			// Validasi format token (bisa disesuaikan)
+			if (!newToken.startsWith("eyJ") || newToken.length < 20) {
+				await sock.sendMessage(sender, {
+					text: "⚠️ Token tidak valid! Silakan masukkan token yang benar.",
+				});
+				return;
+			}
+
+			// Simpan token baru
+			updateUserToken(
+				sender.includes("@g.us")
+					? msg.key.participant.split("@")[0]
+					: sender.split("@")[0] === process.env.OWNER_NUMBER
+					? { expired: false }
+					: checkTokenExpired(
+							sender.includes("@g.us")
+								? msg.key.participant.split("@")[0]
+								: sender.split("@")[0],
+					  ),
+				newToken,
+			); // Fungsi untuk menyimpan token baru
+
+			// Hapus pengguna dari daftar input token
+			tokenInputMap.delete(
+				sender.includes("@g.us")
+					? msg.key.participant.split("@")[0]
+					: sender.split("@")[0] === process.env.OWNER_NUMBER
+					? { expired: false }
+					: checkTokenExpired(
+							sender.includes("@g.us")
+								? msg.key.participant.split("@")[0]
+								: sender.split("@")[0],
+					  ),
+			);
+
+			await sock.sendMessage(sender, {
+				text: "✅ Token berhasil diperbarui! Anda sekarang dapat menggunakan perintah lagi.",
+			});
+
+			return;
+		}
+
 		// **Cek dan jalankan plugin jika cocok**
 		for (const plugin of plugins) {
 			try {
-				// Cek apakah perintah cocok dengan plugin
 				if (
 					(typeof plugin.command === "string" &&
 						text.toLowerCase().startsWith(plugin.command)) ||
 					cmd == plugin.command ||
 					parsedParams == plugin.command
 				) {
-					if (result.expired) {
-						await sock.sendMessage(sender, {
-							text: `⚠️ ${result.message}`,
-						});
-						return;
-					}
 					// Load status AntiSpam
 					const config = loadAntispam();
 
 					// Jika AntiSpam aktif, lakukan pengecekan batasan command
 					if (config.antispam) {
-						if (
-							msg.key.fromMe &&
-							sender.includes("@broadcast") &&
-							sender.includes("@newsletter")
-						)
-							return;
 						const userUsage = commandUsage.get(sender) || {
 							count: 0,
 							time: Date.now(),
