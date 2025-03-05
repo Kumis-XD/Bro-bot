@@ -16,10 +16,6 @@ export default {
 				});
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Joko sedang berpikir...",
-			});
-
 			// Panggil API Joko
 			const { data: jokoResponse } = await axios.get(
 				`https://api.siputzx.my.id/api/ai/joko?content=${encodeURIComponent(
