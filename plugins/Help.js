@@ -113,7 +113,7 @@ export default {
 					title: name,
 					description,
 				});
-			} else if ([".npm", ".git", ".igs"].includes(command)) {
+			} else if ([".npm", ".git", ".igs", ".ffs"].includes(command)) {
 				categories.stalker.push({
 					id: command,
 					title: name,
