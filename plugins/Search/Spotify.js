@@ -61,7 +61,7 @@ export default {
 				ppUrl = await sock.profilePictureUrl(sender, "image");
 			} catch (err) {
 				ppUrl =
-					"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg";
+					"https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg";
 			}
 
 			// Kirim pesan dengan daftar lagu dalam format interactiveMeta
@@ -69,7 +69,7 @@ export default {
 				sender,
 				{
 					image: {
-						url: "https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
+						url: "https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
 					},
 					contextInfo: {
 						externalAdReply: {

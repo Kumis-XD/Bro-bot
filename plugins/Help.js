@@ -47,7 +47,6 @@ export default {
 			bot: [],
 			network: [],
 			tools: [],
-			cpanel: [],
 			other: [],
 		};
 
@@ -116,12 +115,6 @@ export default {
 				});
 			} else if ([".npm", ".git", ".igs", ".ffs"].includes(command)) {
 				categories.stalker.push({
-					id: command,
-					title: name,
-					description,
-				});
-			} else if ([".lpanel", ".cpanel"].includes(command)) {
-				categories.cpanel.push({
 					id: command,
 					title: name,
 					description,
@@ -235,7 +228,7 @@ export default {
 			ppUrl = await sock.profilePictureUrl(sender, "image");
 		} catch (err) {
 			ppUrl =
-				"https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg";
+				"https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg";
 		}
 
 		// Kirim pesan dengan tombol interaktif
