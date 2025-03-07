@@ -109,37 +109,37 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 			time: prayerTimes["Imsak"],
 			message:
 				"⏰ Imsak telah tiba! Waktu sahur telah selesai. Bersiaplah untuk sholat Subuh. 🕌",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c38e9df41d6.mp3", // File audio imsak
+			audio: "https://files.catbox.moe/olsp7o.mp3", // File audio imsak
 		},
 		{
 			name: "Fajr (Subuh)",
 			time: prayerTimes["Fajr"],
 			message: "⏰ Subuh telah tiba! Jangan lupa sholat. 🕌",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c6e563e6d36.mp3",
+			audio: "https://files.catbox.moe/m8lr70.mp3",
 		},
 		{
 			name: "Dhuhr (Dzuhur)",
 			time: prayerTimes["Dhuhr"],
 			message: "⏰ Dzuhur telah tiba! Jangan lupa sholat. 🕌",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c6e51374274.mp3",
+			audio: "https://files.catbox.moe/8uon3o.mp3",
 		},
 		{
 			name: "Asr (Ashar)",
 			time: prayerTimes["Asr"],
 			message: "⏰ Ashar telah tiba! Jangan lupa sholat. 🕌",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c6e51374274.mp3",
+			audio: "https://files.catbox.moe/8uon3o.mp3",
 		},
 		{
 			name: "Maghrib",
 			time: prayerTimes["Maghrib"],
 			message: "⏰ Maghrib telah tiba! Waktunya berbuka puasa. 🌙",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c6e51374274.mp3",
+			audio: "https://files.catbox.moe/8uon3o.mp3",
 		},
 		{
 			name: "Isha (Isya)",
 			time: prayerTimes["Isha"],
 			message: "⏰ Isya telah tiba! Jangan lupa sholat. 🕌",
-			audio: "https://cloudkuimages.xyz/uploads/audios/67c6e51374274.mp3",
+			audio: "https://files.catbox.moe/8uon3o.mp3",
 		},
 	];
 
