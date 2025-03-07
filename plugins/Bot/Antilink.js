@@ -78,27 +78,26 @@ export default {
 
 			// **Ambil dan update konfigurasi**
 			let config = loadAntilink();
-			const groupId = msg.key.remoteJid;
 
 			if (status === "on") {
-				if (config[groupId]) {
+				if (config["antilink"]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link sudah aktif di grup ini!",
 					});
 				} else {
-					config[groupId] = true;
+					config["antilink"] = true;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link telah diaktifkan! Semua link akan otomatis dihapus.",
 					});
 				}
 			} else if (status === "off") {
-				if (!config[groupId]) {
+				if (!config["antilink"]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link sudah nonaktif di grup ini!",
 					});
 				} else {
-					delete config[groupId];
+					delete config["antilink"];
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link telah dinonaktifkan!",
