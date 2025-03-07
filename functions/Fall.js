@@ -169,12 +169,10 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 						showAdAttribution: true,
 						title: message,
 						body: time,
-						thumbnailUrl:
-							"https://cloudkuimages.xyz/uploads/images/67c4243ecf8a1.jpg",
+						thumbnailUrl: "https://files.catbox.moe/v2tdfk.jpg",
 						renderLargerThumbnail: true,
 						mediaType: 1,
-						mediaUrl:
-							"https://cloudkuimages.xyz/uploads/images/67c4243ecf8a1.jpg",
+						mediaUrl: "",
 						sourceUrl: audio,
 					},
 				},
