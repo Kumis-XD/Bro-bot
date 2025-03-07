@@ -6,13 +6,13 @@ export default {
 	description: "Download audio YouTube dan mengirimkannya.",
 	execute: async (sock, sender, text, msg) => {
 		try {
-			// Ambil URL dari args
+			// Ambil URL dari args menggunakan regex
 			const urlMatch = text.match(/^.ytmp3\s+(\S+)/);
 			const url = urlMatch ? urlMatch[1] : null;
 
 			// Validasi URL
 			if (!url || !url.startsWith("http")) {
-				return sock.sendMessage(sender, {
+				return await sock.sendMessage(sender, {
 					text: "⚠️ Mohon sertakan link YouTube yang valid!",
 				});
 			}
@@ -22,33 +22,36 @@ export default {
 			});
 
 			// Ambil data audio dari API eksternal
-			const { data: audioData } = await axios.get(
-				`https://api.siputzx.my.id/api/dl/youtube/mp3?url=${url}`,
+			const { data: response } = await axios.get(
+				`https://restapi-v2.simplebot.my.id/download/ytdl?url=${encodeURIComponent(
+					url,
+				)}`,
 			);
 
 			// Validasi respons API
-			if (!audioData?.status || !audioData?.data) {
+			if (!response?.status || !response?.result?.mp3) {
 				return await sock.sendMessage(sender, {
 					text: "⚠️ Gagal mengunduh audio! Coba link lain.",
 				});
 			}
 
-			// Ambil informasi dari API
-			const download = audioData.data;
-			console.log("🔗 Link Download:", download);
+			// Ambil detail audio dari response API
+			const audioData = response.result;
+			const title = audioData.title || "YouTube Audio";
+			const audioUrl = audioData.mp3;
 
 			// Kirim audio ke pengguna
 			await sock.sendMessage(
 				sender,
 				{
-					audio: { url: download },
+					audio: { url: audioUrl },
 					mimetype: "audio/mpeg",
-					fileName: "YouTube_Audio.mp3",
+					fileName: `${title}.mp3`,
 				},
 				{ quoted: msg },
 			);
 		} catch (error) {
-			console.error("❌ Error:", error?.message || error);
+			console.error("❌ Error:", error);
 			await sock.sendMessage(sender, {
 				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
 			});

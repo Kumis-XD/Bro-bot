@@ -23,55 +23,36 @@ export default {
 
 			// Ambil data video dari API eksternal
 			const { data: response } = await axios.get(
-				`https://linecloud.my.id/api/download/ytmp4?url=${url}`,
+				`https://restapi-v2.simplebot.my.id/download/ytdl?url=${encodeURIComponent(
+					url,
+				)}`,
 			);
 
 			// Validasi respons dari API
-			if (!response?.status || !response?.data?.downloadLink) {
+			if (!response?.status || !response?.result?.mp4) {
 				return await sock.sendMessage(sender, {
 					text: "⚠️ Gagal mendapatkan video! Coba link lain.",
 				});
 			}
 
 			// Ambil detail video dari response API
-			const videoData = response.data;
-			const title = videoData.title || "Video";
-			const creator = videoData.channelTitle || "Tidak diketahui";
-			const duration = videoData.duration || "Tidak diketahui";
-			const views = videoData.statistics?.viewCount || "Tidak diketahui";
-			const uploaded = videoData.publishedAt || "Tidak diketahui";
-			const thumbnail =
-				videoData.thumbnails?.high?.url ||
-				videoData.thumbnails?.default?.url;
+			const videoData = response.result;
+			const title = videoData.title || "Video YouTube";
+			const videoUrl = videoData.mp4;
 
 			// Kirim informasi video ke pengguna
 			const caption =
 				`🎬 *Informasi Video YouTube*\n\n` +
 				`📌 *Judul:* ${title}\n` +
-				`👤 *Creator:* ${creator}\n` +
-				`⏳ *Durasi:* ${duration} detik\n` +
-				`👀 *Views:* ${views}\n` +
-				`🕒 *Diunggah:* ${uploaded}\n`;
+				`🔗 *Link Asli:* ${url}\n`;
 
 			await sock.sendMessage(
 				sender,
 				{
-					video: { url: videoData.downloadLink },
+					video: { url: videoUrl },
 					mimetype: "video/mp4",
 					caption: caption,
 					fileName: `${title}.mp4`,
-					contextInfo: {
-						externalAdReply: {
-							showAdAttribution: true,
-							title: title,
-							body: creator,
-							...(thumbnail ? { thumbnailUrl: thumbnail } : {}),
-							renderLargerThumbnail: true,
-							mediaType: 1,
-							mediaUrl: url,
-							sourceUrl: url,
-						},
-					},
 				},
 				{ quoted: msg },
 			);
