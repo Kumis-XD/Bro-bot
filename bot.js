@@ -514,16 +514,6 @@ END:VCARD`;
 			text,
 		);
 
-		const result = sender.includes("@g.us")
-			? msg.key.participant.split("@")[0]
-			: sender.split("@")[0] === process.env.OWNER_NUMBER
-			? { expired: false }
-			: checkTokenExpired(
-					sender.includes("@g.us")
-						? msg.key.participant.split("@")[0]
-						: sender.split("@")[0],
-			  );
-
 		// Fungsi untuk memeriksa apakah pengirim adalah admin atau owner
 		const isAdminOrOwner = (sender, groupMembers) => {
 			// Cek apakah pengirim adalah admin atau owner

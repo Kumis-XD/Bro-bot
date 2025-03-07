@@ -50,17 +50,13 @@ export default {
 
 			// Kirim setiap media (gambar/video) satu per satu
 			for (const media of mediaList) {
-				const { url: mediaUrl, thumbnail } = media;
-
-				// Tentukan tipe media berdasarkan respons API
-				const mediaMessage = mediaUrl.includes("mp4")
-					? { video: { url: mediaUrl }, mimetype: "video/mp4" }
-					: { image: { url: mediaUrl } };
+				const { url, thumbnail } = media;
 
 				await sock.sendMessage(
 					sender,
 					{
-						...mediaMessage,
+						video: { url: url },
+						mimetype: "video/mp4",
 						caption: "✅ *Instagram Download Success!*",
 						contextInfo: {
 							externalAdReply: {

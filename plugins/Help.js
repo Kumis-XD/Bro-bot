@@ -47,6 +47,7 @@ export default {
 			bot: [],
 			network: [],
 			tools: [],
+			cpanel: [],
 			other: [],
 		};
 
@@ -115,6 +116,12 @@ export default {
 				});
 			} else if ([".npm", ".git", ".igs", ".ffs"].includes(command)) {
 				categories.stalker.push({
+					id: command,
+					title: name,
+					description,
+				});
+			} else if ([".lpanel", ".cpanel"].includes(command)) {
+				categories.cpanel.push({
 					id: command,
 					title: name,
 					description,

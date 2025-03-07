@@ -1,4 +1,4 @@
-const { ffStalk } = require("../../functions/Fall.js");
+import { ffStalk } from "../../functions/Fall.js";
 
 export default {
 	command: ".ffs",
