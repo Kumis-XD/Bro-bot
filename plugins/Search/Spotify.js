@@ -23,7 +23,7 @@ export default {
 
 			// Ambil data lagu dari API eksternal
 			const { data: response } = await axios.post(
-				`https://spotifydown.app/api/metadata?link=serana`,
+				`https://spotifydown.app/api/metadata?link=${query}`,
 				{
 					headers: { Referer: "https://spotifydown.app/" },
 				},
