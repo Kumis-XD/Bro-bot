@@ -20,7 +20,7 @@ export default {
 							showAdAttribution: true,
 							mediaType: 1,
 							mediaUrl:
-								"https://files.fotoenhancer.com/uploads/c0ff86c5-bb09-4b86-9ada-530b4429aff5.jpg",
+								"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
 							title: "「 🔐 OWNER SECURITY OPTIONS 」",
 							body: "Atur fitur keamanan bot sesuai kebutuhan!",
 							sourceUrl: "",
