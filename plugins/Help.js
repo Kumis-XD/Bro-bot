@@ -246,7 +246,7 @@ export default {
 						body: times.timeWIB,
 						sourceUrl: "",
 						thumbnailUrl:
-							"https://files.fotoenhancer.com/uploads/4f3f4c83-2e52-4296-8063-12756c823d05.jpg",
+							"https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
 						renderLargerThumbnail: true,
 					},
 				},
