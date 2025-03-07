@@ -40,13 +40,24 @@ export default {
 			const title = audioData.title || "YouTube Audio";
 			const audioUrl = audioData.mp3;
 
-			// Kirim audio ke pengguna
 			await sock.sendMessage(
 				sender,
 				{
 					audio: { url: audioUrl },
 					mimetype: "audio/mpeg",
 					fileName: `${title}.mp3`,
+					contextInfo: {
+						externalAdReply: {
+						  showAdAttribution: true,
+							title: "「 RESULT SPOTIFY 」",
+							body: title,
+							thumbnailUrl: "https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg",
+							renderLargerThumbnail: true,
+							mediaType: 1,
+							mediaUrl: url,
+							sourceUrl: url,
+						},
+					},
 				},
 				{ quoted: msg },
 			);
