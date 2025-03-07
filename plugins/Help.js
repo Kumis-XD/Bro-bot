@@ -235,7 +235,7 @@ export default {
 			ppUrl = await sock.profilePictureUrl(sender, "image");
 		} catch (err) {
 			ppUrl =
-				"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg";
+				"https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg";
 		}
 
 		// Kirim pesan dengan tombol interaktif
@@ -248,7 +248,7 @@ export default {
 						showAdAttribution: true,
 						mediaType: 1,
 						mediaUrl:
-							"https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
+							"https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
 						title: "「 Padz x Bro Bot 」",
 						body: times.timeWIB,
 						sourceUrl: "",

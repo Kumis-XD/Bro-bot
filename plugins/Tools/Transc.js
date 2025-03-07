@@ -45,7 +45,7 @@ export default {
 							title: "「 RESULT TRANSCRIPT 」",
 							body: `Video ID: ${result.video_id}`,
 							sourceUrl: "",
-							thumbnailUrl: "https://cloudkuimages.xyz/uploads/images/67c45f2fd0cc3.jpg",
+							thumbnailUrl: "https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
 							renderLargerThumbnail: false,
 						},
 					},
