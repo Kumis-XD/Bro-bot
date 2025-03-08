@@ -162,6 +162,20 @@ export default {
 														"❌ Matikan AutoSholat",
 													id: ".autosholat off",
 												},
+												{
+													header: "🗣️ BADWORD SETTING",
+													title: "💬 BADWORD",
+													description:
+														"✅ Aktifkan Antibadword",
+													id: ".antibadword on",
+												},
+												{
+													header: "🗣️ BADWORD SETTING",
+													title: "💬 BADWORD",
+													description:
+														"❌ Matikan Antibadword",
+													id: ".antibadword off",
+												},
 											],
 										},
 									],

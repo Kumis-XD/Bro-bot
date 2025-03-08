@@ -148,6 +148,7 @@ export default {
 					".autosholat",
 					".autoread",
 					".antiopsi",
+					".antibad",
 				].includes(command)
 			) {
 				categories.owner.push({

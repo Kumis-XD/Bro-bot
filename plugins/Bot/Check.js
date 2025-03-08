@@ -4,6 +4,7 @@ import { loadAutoAI } from "./Autoai.js";
 import { loadAntispam } from "./Antispam.js";
 import { loadAntilink } from "./Antilink.js";
 import { loadAntimedia } from "./Antimedia.js";
+import { loadAntibad } from "./Antibad.js";
 
 export default {
 	command: ".cek",
@@ -16,14 +17,16 @@ export default {
 		const antisConfig = loadAntispam();
 		const antilinkConfig = loadAntilink();
 		const antimedConfig = loadAntimedia();
+		const antibadConfig = loadAntibad();
 
 		let pesan = `📌 *Status Fitur*:
 - *Autosholat*: ${sholatConfig.autosholat ? "✅ AKTIF" : "❌ NONAKTIF"}
 - *Autoread*: ${readConfig.autoread ? "✅ AKTIF" : "❌ NONAKTIF"}
-- *Autoai*: ${configai.autoai ? "✅ AKTIF" : "❌ NONAKTIF"}
-- *Antispam*: ${antisConfig.antispam ? "✅ AKTIF" : "❌ NONAKTIF"}
-- *Antilink*: ${antilinkConfig.antilink ? "✅ AKTIF" : "❌ NONAKTIF"}
-- *Antimedia*: ${antimedConfig.antimedia ? "✅ AKTIF" : "❌ NONAKTIF"}`;
+- *Autoai*: ${configai[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
+- *Antispam*: ${antisConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
+- *Antilink*: ${antilinkConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
+- *Antimedia*: ${antimedConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
+- *Antibad*: ${antibadConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}`;
 		await sock.sendMessage(sender, { text: pesan });
 	},
 };

@@ -29,12 +29,20 @@ import { loadAntilink } from "./plugins/Bot/Antilink.js";
 import { loadAutoAI } from "./plugins/Bot/Autoai.js";
 import { schedulePrayerReminders } from "./functions/Fall.js";
 import { loadAntimedia } from "./plugins/Bot/Antimedia.js";
+import {
+	loadAntibad,
+	loadWarnings,
+	saveWarnings,
+	containsBadWord,
+} from "./plugins/Bot/Antibad.js";
 
 dotenv.config();
 
 const commandUsage = new Map();
 const antiConfig = loadAntilink();
 const antimedConfig = loadAntimedia();
+const antibadConfig = loadAntibad();
+const warnings = loadWarnings();
 const store = makeInMemoryStore({
 	logger: pino().child({ level: "silent", stream: "store" }),
 });
@@ -551,7 +559,7 @@ END:VCARD`;
 				}
 
 				if (isGroup) {
-					groupMetadata = await sock.groupMetadata(msg.key.remoteJid); // Ambil metadata grup
+					groupMetadata = await sock.groupMetadata(sender); // Ambil metadata grup
 					groupMembers = groupMetadata.participants || []; // Ambil daftar anggota grup
 				}
 
@@ -591,7 +599,7 @@ END:VCARD`;
 				return;
 
 			if (isGroup) {
-				groupMetadata = await sock.groupMetadata(msg.key.remoteJid); // Ambil metadata grup
+				groupMetadata = await sock.groupMetadata(sender); // Ambil metadata grup
 				groupMembers = groupMetadata.participants || []; // Ambil daftar anggota grup
 			}
 
@@ -640,6 +648,61 @@ END:VCARD`;
 				}
 			} catch (error) {
 				console.error("❌ Error saat menghubungi API:", error);
+			}
+		}
+
+		if (isGroup && antibadConfig[sender]) {
+			try {
+				// Cek apakah teks mengandung kata kasar
+				const hasBadWord = await containsBadWord(text);
+				if (!hasBadWord) return;
+
+				// Cegah bot menghapus pesannya sendiri atau pesan dari broadcast
+				if (
+					msg.key.fromMe ||
+					sender.includes("@broadcast") ||
+					sender.includes("@newsletter")
+				)
+					return;
+
+				// Ambil informasi grup
+				const groupMetadata = await sock.groupMetadata(sender);
+				const groupMembers = groupMetadata?.participants || [];
+
+				// Cek apakah bot adalah admin
+				const botNumber =
+					sock.user.id.split(":")[0] + "@s.whatsapp.net";
+				const botIsAdmin = groupMembers.some(
+					(member) => member.id === botNumber && member.admin,
+				);
+				if (!botIsAdmin) return;
+
+				// Cek apakah pengirim adalah admin atau owner
+				const participantId = msg.key.participant || sender;
+				if (isAdminOrOwner(participantId, groupMembers)) return;
+
+				// Tambahkan peringatan ke user
+				warnings[participantId] = (warnings[participantId] || 0) + 1;
+				saveWarnings(warnings);
+
+				// Kirim peringatan ke user
+				await sock.sendMessage(sender, {
+					text: `⚠️ Kata kasar terdeteksi!\nPush name: ${senderNumber}\nPeringatan: ${warnings[participantId]}/5.`,
+					mentions: [participantId],
+				});
+
+				// Jika user mencapai 5 peringatan, keluarkan dari grup
+				if (warnings[participantId] >= 5) {
+					await sock.groupParticipantsUpdate(
+						sender,
+						[participantId],
+						"remove",
+					);
+					delete warnings[participantId];
+					saveWarnings(warnings);
+				}
+			} catch (error) {
+				console.error("❌ Error saat memberikan peringatan:", error);
 			}
 		}
 
