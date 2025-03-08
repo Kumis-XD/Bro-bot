@@ -69,7 +69,7 @@ export default {
 				sender,
 				{
 					image: {
-						url: "https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
+						url: "https://files.catbox.moe/o1e6ny.jpg",
 					},
 					contextInfo: {
 						externalAdReply: {

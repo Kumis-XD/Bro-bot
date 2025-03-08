@@ -60,24 +60,24 @@ export default {
 			}
 
 			if (status === "on") {
-				if (config.antispam) {
+				if (config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-spam sudah aktif!",
 					});
 				} else {
-					config.antispam = true;
+					config[sender] = true;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-spam telah diaktifkan!",
 					});
 				}
 			} else if (status === "off") {
-				if (!config.antispam) {
+				if (!config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-spam sudah nonaktif!",
 					});
 				} else {
-					config.antispam = false;
+					config[sender] = false;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-spam telah dinonaktifkan!",

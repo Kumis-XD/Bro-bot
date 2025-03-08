@@ -80,24 +80,24 @@ export default {
 			let config = loadAntimedia();
 
 			if (status === "on") {
-				if (config["antimedia"]) {
+				if (config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-media sudah aktif di grup ini!",
 					});
 				} else {
-					config["antimedia"] = true;
+					config[sender] = true;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-media telah diaktifkan! Semua media akan otomatis dihapus.",
 					});
 				}
 			} else if (status === "off") {
-				if (!config["antimedia"]) {
+				if (!config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-media sudah nonaktif di grup ini!",
 					});
 				} else {
-					delete config["antimedia"];
+					config[sender] = false;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-media telah dinonaktifkan!",

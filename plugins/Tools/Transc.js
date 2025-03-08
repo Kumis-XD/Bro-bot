@@ -45,7 +45,7 @@ export default {
 							title: "「 RESULT TRANSCRIPT 」",
 							body: `Video ID: ${result.video_id}`,
 							sourceUrl: "",
-							thumbnailUrl: "https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg",
+							thumbnailUrl: "https://files.catbox.moe/o1e6ny.jpg",
 							renderLargerThumbnail: false,
 						},
 					},

@@ -80,24 +80,24 @@ export default {
 			let config = loadAntilink();
 
 			if (status === "on") {
-				if (config["antilink"]) {
+				if (config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link sudah aktif di grup ini!",
 					});
 				} else {
-					config["antilink"] = true;
+					config[sender] = true;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link telah diaktifkan! Semua link akan otomatis dihapus.",
 					});
 				}
 			} else if (status === "off") {
-				if (!config["antilink"]) {
+				if (!config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link sudah nonaktif di grup ini!",
 					});
 				} else {
-					delete config["antilink"];
+					config[sender] = false;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ Anti-link telah dinonaktifkan!",

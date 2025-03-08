@@ -538,7 +538,7 @@ END:VCARD`;
 			)
 				return;
 
-			if (isGroup && antimedConfig.antimedia) {
+			if (isGroup && antimedConfig[sender]) {
 				let groupMetadata = null;
 				let groupMembers = [];
 				let botNumber = sock.user.id.split(":")[0] + "@s.whatsapp.net";
@@ -579,7 +579,7 @@ END:VCARD`;
 			}
 		}
 
-		if (antiConfig.antilink && containsLink(text) && isGroup) {
+		if (antiConfig[sender] && containsLink(text) && isGroup) {
 			// Ambil informasi grup jika pengirim dari grup
 			let groupMetadata = null;
 			let groupMembers = [];
@@ -613,7 +613,7 @@ END:VCARD`;
 			return; // Stop eksekusi lebih lanjut
 		}
 
-		if (configai.autoai) {
+		if (configai[sender]) {
 			if (msg.key.fromMe) return;
 			try {
 				const { data } = await axios.get(
@@ -676,7 +676,7 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 					const config = loadAntispam();
 
 					// Jika AntiSpam aktif, lakukan pengecekan batasan command
-					if (config.antispam) {
+					if (config[sender]) {
 						const userUsage = commandUsage.get(userId) || {
 							count: 0,
 							time: Date.now(),

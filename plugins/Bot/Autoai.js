@@ -40,6 +40,7 @@ export default {
 	execute: async (sock, sender, text, msg) => {
 		try {
 			let config = loadAutoAI();
+			let groupId = sender.includes("@g.us");
 			const statusMatch = text.match(/^\.autoai\s+(\S+)/);
 			const status = statusMatch ? statusMatch[1] : null;
 
@@ -50,25 +51,32 @@ export default {
 				return;
 			}
 
+			if (!groupId) {
+				await sock.sendMessage(sender, {
+					text: "⚠️ Perintah ini hanya bisa digunakan dalam grup!",
+				});
+				return;
+			}
+
 			if (status === "on") {
-				if (config.autoai) {
+				if (config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ AutoAI sudah aktif!",
 					});
 				} else {
-					config.autoai = true;
+					config[sender] = true;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ AutoAI telah diaktifkan!",
 					});
 				}
 			} else if (status === "off") {
-				if (!config.autoai) {
+				if (!config[sender]) {
 					await sock.sendMessage(sender, {
 						text: "✅ AutoAI sudah nonaktif!",
 					});
 				} else {
-					config.autoai = false;
+					config[sender] = false;
 					saveConfig(config);
 					await sock.sendMessage(sender, {
 						text: "✅ AutoAI telah dinonaktifkan!",
