@@ -8,7 +8,8 @@ export default {
 			try {
 				ppUrl = await sock.profilePictureUrl(sender, "image");
 			} catch (err) {
-				ppUrl = "https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg"; // Default gambar jika gagal mengambil PP
+				ppUrl =
+					"https://i.ibb.co.com/QFHVz79s/4fd4dbf019b404a6e7ea4bf2b313acd8.jpg"; // Default gambar jika gagal mengambil PP
 			}
 
 			await sock.sendMessage(
@@ -162,15 +163,21 @@ export default {
 														"❌ Matikan AutoSholat",
 													id: ".autosholat off",
 												},
+											],
+										},
+										{
+											title: "💬 『 ANTIBADWORD 』",
+											highlight_label: "🔹 Bro-Bot",
+											rows: [
 												{
-													header: "🗣️ BADWORD SETTING",
+													header: "🗣️ ANTIBADWORD SETTING",
 													title: "💬 BADWORD",
 													description:
 														"✅ Aktifkan Antibadword",
 													id: ".antibadword on",
 												},
 												{
-													header: "🗣️ BADWORD SETTING",
+													header: "🗣️ ANTIBADWORD SETTING",
 													title: "💬 BADWORD",
 													description:
 														"❌ Matikan Antibadword",

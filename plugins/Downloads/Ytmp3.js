@@ -23,35 +23,41 @@ export default {
 
 			// Ambil data audio dari API eksternal
 			const { data: response } = await axios.get(
-				`https://restapi-v2.simplebot.my.id/download/ytdl?url=${encodeURIComponent(
+				`https://rest.cloudkuimages.xyz/api/download/ytmp3?url=${encodeURIComponent(
 					url,
 				)}`,
 			);
 
 			// Validasi respons API
-			if (!response?.status || !response?.result?.mp3) {
+			if (!response?.status || !response?.metadata?.download_url) {
 				return await sock.sendMessage(sender, {
 					text: "⚠️ Gagal mengunduh audio! Coba link lain.",
 				});
 			}
 
 			// Ambil detail audio dari response API
-			const audioData = response.result;
+			const audioData = response.metadata;
 			const title = audioData.title || "YouTube Audio";
-			const audioUrl = audioData.mp3;
+			const author = audioData.author || "Tidak diketahui";
+			const bitrate = audioData.bitrate || "Unknown";
+			const audioUrl = audioData.download_url;
+			const thumbnailUrl =
+				"https://i.ibb.co/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg"; // Gambar default
 
+			// Kirim audio ke pengguna
 			await sock.sendMessage(
 				sender,
 				{
 					audio: { url: audioUrl },
 					mimetype: "audio/mpeg",
 					fileName: `${title}.mp3`,
+					caption: `🎵 *YouTube MP3 Download*\n\n📌 *Judul:* ${title}\n🎤 *Author:* ${author}\n🔊 *Bitrate:* ${bitrate} kbps\n🔗 *Link:* ${url}`,
 					contextInfo: {
 						externalAdReply: {
-						  showAdAttribution: true,
-							title: "「 RESULT SPOTIFY 」",
-							body: title,
-							thumbnailUrl: "https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg",
+							showAdAttribution: true,
+							title: title,
+							body: `🎤 ${author} • 🔊 ${bitrate} kbps`,
+							thumbnailUrl: thumbnailUrl,
 							renderLargerThumbnail: true,
 							mediaType: 1,
 							mediaUrl: url,
