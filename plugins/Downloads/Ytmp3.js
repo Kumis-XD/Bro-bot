@@ -1,4 +1,4 @@
-import axios from "axios";
+import { savetube } from "../../functions/Fall.js";
 
 export default {
 	command: ".ytmp3",
@@ -11,7 +11,7 @@ export default {
 			const url = urlMatch ? urlMatch[1] : null;
 
 			// Validasi URL
-			if (!url || !url.startsWith("http")) {
+			if (!url) {
 				return await sock.sendMessage(sender, {
 					text: "⚠️ Mohon sertakan link YouTube yang valid!",
 				});
@@ -21,28 +21,22 @@ export default {
 				text: "⏳ Tunggu sebentar, sedang mengambil audio...",
 			});
 
-			// Ambil data audio dari API eksternal
-			const { data: response } = await axios.get(
-				`https://rest.cloudkuimages.xyz/api/download/ytmp3?url=${encodeURIComponent(
-					url,
-				)}`,
-			);
+			// Gunakan scraper untuk mendapatkan link MP3
+			const response = await savetube.download(url, "mp3");
 
-			// Validasi respons API
-			if (!response?.status || !response?.metadata?.download_url) {
+			// Validasi respons scraper
+			if (!response?.status || !response?.result?.download) {
 				return await sock.sendMessage(sender, {
-					text: "⚠️ Gagal mengunduh audio! Coba link lain.",
+					text: `⚠️ Gagal mengunduh audio!\n\n❌ *Error:* ${
+						response?.error || "Tidak diketahui"
+					}`,
 				});
 			}
 
-			// Ambil detail audio dari response API
-			const audioData = response.metadata;
-			const title = audioData.title || "YouTube Audio";
-			const author = audioData.author || "Tidak diketahui";
-			const bitrate = audioData.bitrate || "Unknown";
-			const audioUrl = audioData.download_url;
-			const thumbnailUrl =
-				"https://i.ibb.co/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg"; // Gambar default
+			// Ambil detail audio
+			const title = response.result.title || "YouTube Audio";
+			const audioUrl = response.result.download;
+			const thumbnailUrl = response.result.thumbnail;
 
 			// Kirim audio ke pengguna
 			await sock.sendMessage(
@@ -51,12 +45,12 @@ export default {
 					audio: { url: audioUrl },
 					mimetype: "audio/mpeg",
 					fileName: `${title}.mp3`,
-					caption: `🎵 *YouTube MP3 Download*\n\n📌 *Judul:* ${title}\n🎤 *Author:* ${author}\n🔊 *Bitrate:* ${bitrate} kbps\n🔗 *Link:* ${url}`,
+					caption: `🎵 *YouTube MP3 Download*\n\n📌 *Judul:* ${title}\n🔗 *Link:* ${url}`,
 					contextInfo: {
 						externalAdReply: {
 							showAdAttribution: true,
 							title: title,
-							body: `🎤 ${author} • 🔊 ${bitrate} kbps`,
+							body: "YouTube MP3",
 							thumbnailUrl: thumbnailUrl,
 							renderLargerThumbnail: true,
 							mediaType: 1,
