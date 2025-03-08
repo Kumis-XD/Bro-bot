@@ -477,6 +477,7 @@ END:VCARD`;
 			"";
 		const quotd =
 			msg.message?.imageMessage ||
+			msg.message?.videoMessage ||
 			msg.message?.documentMessage ||
 			msg.message?.extendedTextMessage?.contextInfo?.quotedMessage
 				?.imageMessage ||
