@@ -5,7 +5,8 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import schedule from "node-schedule";
-import ora from "ora"; // Import library untuk animasi loading
+import ora from "ora";
+import fakeUa from "fake-useragent";
 import * as cheerio from "cheerio";
 import FormData from "form-data";
 
@@ -19,7 +20,7 @@ const botname = process.env.BOT_NAME;
 const ownername = process.env.OWNER_NAME;
 const desc = process.env.BOT_DESCRIPTION;
 
-const sfile = {
+export const sfiledl = {
 	download: async function (url) {
 		const headers = {
 			referer: url,
@@ -133,6 +134,61 @@ const sfile = {
 		}
 	},
 };
+
+export async function SFile(query) {
+	const url = `https://sfile.mobi/search.php?q=${encodeURIComponent(query)}`;
+
+	// Tambahkan header
+	const headers = {
+		Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+		"User-Agent": fakeUa(),
+	};
+
+	try {
+		// Fetch halaman HTML dengan menambahkan headers
+		const { data } = await axios.get(url, { headers });
+		const $ = cheerio.load(data);
+
+		// Array untuk menyimpan hasil
+		let results = [];
+
+		// Loop setiap elemen dengan class "list"
+		$(".list").each((_, element) => {
+			const linkElement = $(element).find("a");
+			const href = linkElement.attr("href");
+			const judul = linkElement.text().trim();
+			const size =
+				$(element)
+					.text()
+					.match(/"(.*?)"/)?.[1] || "Unknown";
+
+			results.push({ href, judul, size });
+		});
+
+		if (results.length === 0) {
+			return {
+				status: "error",
+				author: "padz",
+				message: "Tidak ada hasil yang ditemukan!",
+				result: [],
+			};
+		}
+
+		return {
+			status: "success",
+			author: "padz",
+			result: results,
+		};
+	} catch (error) {
+		console.error("Error fetching data:", error.message);
+		return {
+			status: "error",
+			author: "padz",
+			message: error.message,
+			result: [],
+		};
+	}
+}
 
 export const transcribe = async (url) => {
 	try {

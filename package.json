@@ -30,6 +30,7 @@
 		"cheerio": "^1.0.0",
 		"child_process": "^1.0.2",
 		"dotenv": "^16.4.7",
+		"fake-useragent": "^1.0.1",
 		"fs-extra": "^11.3.0",
 		"gradient-string": "^3.0.0",
 		"hybrid-ytdl": "^1.2.0",

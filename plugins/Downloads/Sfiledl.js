@@ -1,9 +1,11 @@
+import { sfiledl } from "../../functions/Fall.js";
+
 export default {
 	command: ".sfiledl",
 	name: "「 SFILE DOWNLOAD 」",
 	description: "Sfile downloader.",
 	execute: async (sock, sender, text, msg) => {
-		const urlMatch = text.match(/^\.sfile\s+(\S+)/);
+		const urlMatch = text.match(/^.sfiledl\s+(\S+)/);
 		const url = urlMatch ? urlMatch[1] : null;
 
 		if (!url) {
@@ -12,21 +14,15 @@ export default {
 			});
 		}
 
-		if (!url.match(/sfile\.mobi/i)) {
-			return await sock.sendMessage(sender, {
-				text: "URL tidak valid! Pastikan URL dari sfile.mobi",
-			});
-		}
-
 		await sock.sendMessage(sender, { text: "Please Wait..." });
 
 		try {
-			const res = await sfile.download(url);
+			const res = await sfiledl.download(url);
 			if (res.status !== "success") throw res.message;
 
 			const { filename, filesize, mimeType, result } = res.data;
 
-			await conn.sendMessage(
+			await sock.sendMessage(
 				sender,
 				{
 					document: result.buffer,
@@ -37,7 +33,7 @@ export default {
 				{ quoted: msg },
 			);
 		} catch (err) {
-			await conn.sendMessage(sender, {
+			await sock.sendMessage(sender, {
 				text: `Terjadi kesalahan: ${err}`,
 			});
 		}

@@ -129,7 +129,7 @@ export default {
 					title: name,
 					description,
 				});
-			} else if ([".spotify", ".yts", ".pins"].includes(command)) {
+			} else if ([".spotify", ".yts", ".pins", ".sfiles"].includes(command)) {
 				categories.search.push({
 					id: command,
 					title: name,
