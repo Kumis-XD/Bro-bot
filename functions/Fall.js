@@ -162,7 +162,9 @@ export async function SFile(query) {
 					? size.slice(openBracket + 1, closeBracket)
 					: "Unknown";
 
-			results.push({ href, judul, fileSize });
+			if (href && judul && fileSize !== "Unknown") {
+				results.push({ href, judul, fileSize });
+			}
 		});
 
 		if (results.length === 0) {

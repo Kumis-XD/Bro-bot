@@ -35,6 +35,7 @@ export default {
 
 			// Ambil hasil pertama dari pencarian
 			const file = result.result[0];
+			console.log(result.result);
 
 			// Buat teks detail file
 			let fileDetails = `*📂 SFILE DOWNLOADER*\n\n`;
