@@ -105,7 +105,7 @@ export default {
 					".ytmp4",
 					".clone",
 					".mdl",
-					".sfile",
+					".sfiledl",
 				].includes(command)
 			) {
 				categories.downloader.push({
