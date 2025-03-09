@@ -138,31 +138,31 @@ export const sfiledl = {
 export async function SFile(query) {
 	const url = `https://sfile.mobi/search.php?q=${encodeURIComponent(query)}`;
 
-	// Tambahkan header
 	const headers = {
 		Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
 		"User-Agent": fakeUa(),
 	};
 
 	try {
-		// Fetch halaman HTML dengan menambahkan headers
 		const { data } = await axios.get(url, { headers });
 		const $ = cheerio.load(data);
 
-		// Array untuk menyimpan hasil
 		let results = [];
 
-		// Loop setiap elemen dengan class "list"
 		$(".list").each((_, element) => {
 			const linkElement = $(element).find("a");
 			const href = linkElement.attr("href");
-			const judul = linkElement.text().trim();
-			const size =
-				$(element)
-					.text()
-					.match(/"(.*?)"/)?.[1] || "Unknown";
+			let judul = linkElement.text().trim();
+			judul = judul.replace(/\.[a-zA-Z0-9]+$/, "").trim();
+			const size = $(element).text().trim();
+			const openBracket = size.lastIndexOf("(");
+			const closeBracket = size.lastIndexOf(")");
+			const fileSize =
+				openBracket !== -1 && closeBracket !== -1
+					? size.slice(openBracket + 1, closeBracket)
+					: "Unknown";
 
-			results.push({ href, judul, size });
+			results.push({ href, judul, fileSize });
 		});
 
 		if (results.length === 0) {

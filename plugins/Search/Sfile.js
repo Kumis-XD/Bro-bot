@@ -39,7 +39,7 @@ export default {
 			// Buat teks detail file
 			let fileDetails = `*📂 SFILE DOWNLOADER*\n\n`;
 			fileDetails += `📌 *Nama File:* ${file.judul}\n`;
-			fileDetails += `📏 *Ukuran:* ${file.size || "Tidak diketahui"}\n`;
+			fileDetails += `📏 *Ukuran:* ${file.fileSize || "Tidak diketahui"}\n`;
 			fileDetails += `🔗 *Link:* ${file.href}`;
 
 			// Kirim hasil pencarian dengan tampilan interaktif
