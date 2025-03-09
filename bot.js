@@ -654,8 +654,7 @@ END:VCARD`;
 		if (isGroup && antibadConfig[sender]) {
 			try {
 				// Cek apakah teks mengandung kata kasar
-				const hasBadWord = await containsBadWord(text);
-				if (!hasBadWord) return;
+				await containsBadWord(text);
 
 				// Cegah bot menghapus pesannya sendiri atau pesan dari broadcast
 				if (
