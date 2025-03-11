@@ -130,7 +130,9 @@ export default {
 					title: name,
 					description,
 				});
-			} else if ([".spotify", ".yts", ".pins", ".sfiles"].includes(command)) {
+			} else if (
+				[".spotify", ".yts", ".pins", ".sfiles"].includes(command)
+			) {
 				categories.search.push({
 					id: command,
 					title: name,
@@ -149,6 +151,7 @@ export default {
 					".autosholat",
 					".autoread",
 					".antiopsi",
+					".backup",
 				].includes(command)
 			) {
 				categories.owner.push({

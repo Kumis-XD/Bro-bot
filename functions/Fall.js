@@ -135,6 +135,124 @@ export const sfiledl = {
 	},
 };
 
+export const groupResponse_Remove = async (sock, update) => {
+	try {
+		const metadata = await sock.groupMetadata(update.id);
+		const participants = update.participants;
+
+		for (let num of participants) {
+			let ppuser;
+			try {
+				ppuser = await sock.profilePictureUrl(num, "image");
+			} catch {
+				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
+			}
+
+			if (update.action === "remove") {
+				await sock.sendMessage(update.id, {
+					image: { url: ppuser },
+					caption: `╭━━━━━━━━━━━━━━━┅•ิ.•ஐ\n│ *📌Leave To ${
+						metadata.subject
+					}* \n└┬────────────┾•ิ.•┽\n┌┤Sayonara👋 @${
+						num.split("@")[0]
+					}\n││ \n└────────────┾•ิ.•┽`,
+					footer: metadata.subject,
+					mentions: [num],
+				});
+			}
+		}
+	} catch (err) {
+		console.error("❌ Error in groupResponse_Remove:", err);
+	}
+};
+
+export const groupResponse_Welcome = async (sock, update) => {
+	try {
+		const metadata = await sock.groupMetadata(update.id);
+		const participants = update.participants;
+
+		for (let num of participants) {
+			let ppuser;
+			try {
+				ppuser = await sock.profilePictureUrl(num, "image");
+			} catch {
+				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
+			}
+
+			if (update.action === "add") {
+				await sock.sendMessage(update.id, {
+					image: { url: ppuser },
+					caption: `╭━━━━━━━━━━━━━━━┅•ิ.•ஐ\n│ *📌Welcome To ${
+						metadata.subject
+					}* \n└┬────────────┾•ิ.•┽\n┌┤Haii👋 @${
+						num.split("@")[0]
+					}\n││ \n││——[ *ɪɴᴛʀᴏ* ]——\n││ 📛ɴᴀᴍᴀ:\n││ 📅ᴜᴍᴜʀ:\n││ ⚽ʜᴏʙɪ:\n││ 🏢ᴀsᴋᴏᴛ: \n└────────────┾•ิ.•┽`,
+					footer: metadata.subject,
+					mentions: [num],
+				});
+			}
+		}
+	} catch (err) {
+		console.error("❌ Error in groupResponse_Welcome:", err);
+	}
+};
+
+export const groupResponse_Promote = async (sock, update) => {
+	try {
+		const metadata = await sock.groupMetadata(update.id);
+		const participants = update.participants;
+
+		for (let num of participants) {
+			let ppuser;
+			try {
+				ppuser = await sock.profilePictureUrl(num, "image");
+			} catch {
+				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
+			}
+			if (update.action === "promote") {
+				await sock.sendMessage(update.id, {
+					image: { url: ppuser },
+					caption: `*@${
+						num.split("@")[0]
+					} Naik jabatan jadi admin grup*`,
+					footer: metadata.subject,
+					mentions: [num],
+				});
+			}
+		}
+	} catch (err) {
+		console.error("❌ Error in groupResponse_Promote:", err);
+	}
+};
+
+export const groupResponse_Demote = async (sock, update) => {
+	try {
+		const metadata = await sock.groupMetadata(update.id);
+		const participants = update.participants;
+
+		for (let num of participants) {
+			let ppuser;
+			try {
+				ppuser = await sock.profilePictureUrl(num, "image");
+			} catch {
+				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
+			}
+			if (update.action === "demote") {
+				await sock.sendMessage(update.id, {
+					image: { url: ppuser },
+					caption: `*@${
+						num.split("@")[0]
+					} Turun jabatan menjadi member biasa*`,
+					footer: metadata.subject,
+					mentions: [num],
+				});
+			}
+		}
+	} catch (err) {
+		console.error("❌ Error in groupResponse_Demote:", err);
+	}
+};
+
 export async function SFile(query) {
 	const url = `https://sfile.mobi/search.php?q=${encodeURIComponent(query)}`;
 
@@ -356,17 +474,22 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 }
 
 export const capcutdl = async (url) => {
-  let { data } = await axios.post('https://3bic.com/api/download', { url }, {
-    headers: {
-      "content-type": "application/json",
-      "origin": "https://3bic.com",
-      "referer": "https://3bic.com/",
-      "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36"
-    }
-  });
-  data.originalVideoUrl = 'https://3bic.com' + data.originalVideoUrl;
-  return data;
-}
+	let { data } = await axios.post(
+		"https://3bic.com/api/download",
+		{ url },
+		{
+			headers: {
+				"content-type": "application/json",
+				origin: "https://3bic.com",
+				referer: "https://3bic.com/",
+				"user-agent":
+					"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36",
+			},
+		},
+	);
+	data.originalVideoUrl = "https://3bic.com" + data.originalVideoUrl;
+	return data;
+};
 
 export const fvn = {
 	key: { participant: "0@s.whatsapp.net", remoteJid: "status@broadcast" },

@@ -27,7 +27,13 @@ import { loadSholat } from "./plugins/Bot/Autosholat.js";
 import { loadAntispam } from "./plugins/Bot/Antispam.js";
 import { loadAntilink } from "./plugins/Bot/Antilink.js";
 import { loadAutoAI } from "./plugins/Bot/Autoai.js";
-import { schedulePrayerReminders } from "./functions/Fall.js";
+import {
+	schedulePrayerReminders,
+	groupResponse_Remove,
+	groupResponse_Welcome,
+	groupResponse_Promote,
+	groupResponse_Demote,
+} from "./functions/Fall.js";
 import { loadAntimedia } from "./plugins/Bot/Antimedia.js";
 
 dotenv.config();
@@ -265,50 +271,12 @@ async function startBot() {
 		schedulePrayerReminders(sock, chatId, city);
 	}
 
-	sock.ev.on(
-		"group-participants.update",
-		async ({ id, participants, action }) => {
-			const groupMetadata = await sock.groupMetadata(id); // Ambil metadata grup
-			const groupName = groupMetadata.subject; // Nama grup
-			const groupOwner = groupMetadata.owner; // Pemilik grup
-
-			if (action === "add") {
-				console.log(
-					`👥 Anggota baru bergabung: ${participants.join(", ")}`,
-				);
-
-				// Kirim sambutan ke grup
-				const welcomeMessage =
-					`🎉 Selamat datang di grup *${groupName}*!\n\n` +
-					`Hai, ${participants.join(", ")}! 🎉\n` +
-					`Jangan lupa untuk membaca aturan grup dan tetap menjaga kenyamanan bersama! 😊\n\n` +
-					`Pemilik grup: @${groupOwner.split("@")[0]}`;
-
-				// Mengirim sambutan ke grup
-				await sock.sendMessage(id, {
-					text: welcomeMessage,
-					contextInfo: {
-						mentionedJid: participants.map(
-							(participant) => `${participant}@s.whatsapp.net`,
-						), // Menyebut anggota yang baru bergabung
-					},
-				});
-			} else if (action === "remove") {
-				console.log(`🚪 Anggota keluar: ${participants.join(", ")}`);
-
-				// Kirim pesan pemberitahuan jika anggota keluar
-				const farewellMessage =
-					`😢 *${participants.join(
-						", ",
-					)}* telah keluar dari grup *${groupName}*.\n` +
-					`Semoga harimu menyenankan! ✨`;
-
-				await sock.sendMessage(id, {
-					text: farewellMessage,
-				});
-			}
-		},
-	);
+	sock.ev.on("group-participants.update", async (update) => {
+		await groupResponse_Remove(sock, update);
+		await groupResponse_Welcome(sock, update);
+		await groupResponse_Promote(sock, update);
+		await groupResponse_Demote(sock, update);
+	});
 
 	sock.ev.on("call", async (call) => {
 		console.log("📞 Panggilan masuk:", call);

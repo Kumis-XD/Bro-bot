@@ -21,6 +21,7 @@
 		"@hapi/boom": "^10.0.1",
 		"@seaavey/baileys": "^6.6.5",
 		"@zanixongroup/uploader": "^2.0.2",
+		"archiver": "^7.0.1",
 		"awesome-phonenumber": "^7.3.0",
 		"axios": "^1.7.9",
 		"boxen": "^8.0.1",
