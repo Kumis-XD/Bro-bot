@@ -165,26 +165,6 @@ export default {
 												},
 											],
 										},
-										{
-											title: "💬 『 ANTIBADWORD 』",
-											highlight_label: "🔹 Bro-Bot",
-											rows: [
-												{
-													header: "🗣️ ANTIBADWORD SETTING",
-													title: "💬 BADWORD",
-													description:
-														"✅ Aktifkan Antibadword",
-													id: ".antibadword on",
-												},
-												{
-													header: "🗣️ ANTIBADWORD SETTING",
-													title: "💬 BADWORD",
-													description:
-														"❌ Matikan Antibadword",
-													id: ".antibadword off",
-												},
-											],
-										},
 									],
 								}),
 							},

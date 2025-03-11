@@ -29,20 +29,12 @@ import { loadAntilink } from "./plugins/Bot/Antilink.js";
 import { loadAutoAI } from "./plugins/Bot/Autoai.js";
 import { schedulePrayerReminders } from "./functions/Fall.js";
 import { loadAntimedia } from "./plugins/Bot/Antimedia.js";
-import {
-	loadAntibad,
-	loadWarnings,
-	saveWarnings,
-	containsBadWord,
-} from "./plugins/Bot/Antibad.js";
 
 dotenv.config();
 
 const commandUsage = new Map();
 const antiConfig = loadAntilink();
 const antimedConfig = loadAntimedia();
-const antibadConfig = loadAntibad();
-const warnings = loadWarnings();
 const store = makeInMemoryStore({
 	logger: pino().child({ level: "silent", stream: "store" }),
 });
@@ -347,6 +339,94 @@ async function startBot() {
 			await sock.readMessages([msg.key]);
 		}
 
+		sock.react = async (reaction) => {
+			const reactionMessage = {
+				react: {
+					text: reaction,
+					key: msg.key,
+				},
+			};
+
+			await sock.sendMessage(sender, reactionMessage);
+		};
+
+		sock.reply = async (teks, type = "text", data = {}) => {
+			let messageOptions;
+
+			const externalAdReply = {
+				showAdAttribution: true,
+				title: "Padz x Bro bot",
+				containsAutoReply: true,
+				renderLargerThumbnail: true,
+				mediaType: 1,
+				thumbnailUrl: "https://files.catbox.moe/o1e6ny.jpg",
+				mediaUrl: "",
+				sourceUrl: "",
+			};
+
+			switch (type) {
+				case "doc":
+					messageOptions = {
+						document: data.url,
+						mimetype: data.mimetype || "application/octet-stream",
+						fileName: data.fileName || "file",
+						caption: data.caption || teks,
+						contextInfo: { externalAdReply },
+					};
+					break;
+
+				case "mp3":
+					messageOptions = {
+						audio: { url: data.audioUrl },
+						mimetype: "audio/mpeg",
+						fileName: data.fileName || "audio.mp3",
+						caption:
+							data.caption ||
+							`🎵 *Audio Download*\n\n📌 *Judul:* ${
+								data.title || "Unknown"
+							}\n🔗 *Link:* ${data.url || "Unknown"}`,
+						contextInfo: { externalAdReply },
+					};
+					break;
+
+				case "mp4":
+					messageOptions = {
+						video: { url: data.videoUrl },
+						mimetype: "video/mp4",
+						caption: data.caption || "🎥 Video Download",
+						fileName: data.fileName || "video.mp4",
+						contextInfo: { externalAdReply },
+					};
+					break;
+
+				case "image":
+					messageOptions = {
+						image: { url: data.imageUrl },
+						caption: data.caption || "🖼️ Image Download",
+						contextInfo: { externalAdReply },
+					};
+					break;
+
+				default:
+					messageOptions = {
+						document: {
+							url: "https://files.catbox.moe/7xwc4y.json",
+						},
+						mimetype: "application/msword",
+						fileName: "Padz x Bro bot",
+						pageCount: 500,
+						fileLength: 999999999999,
+						caption: teks,
+						contextInfo: { externalAdReply },
+					};
+					break;
+			}
+
+			return await sock.sendMessage(sender, messageOptions, {
+				quoted: msg,
+			});
+		};
+
 		const sender = msg.key.remoteJid;
 		const isGroup = sender.endsWith("@g.us");
 		const participantId = msg.key.participant || sender; // Jika private chat, gunakan sender langsung
@@ -577,9 +657,9 @@ END:VCARD`;
 				}
 
 				// Mengirim notifikasi
-				await sock.sendMessage(sender, {
-					text: "⚠️ Media terdeteksi dan telah dihapus karena fitur Anti-Media aktif.",
-				});
+				await sock.reply(
+					"⚠️ Media terdeteksi dan telah dihapus karena fitur Anti-Media aktif.",
+				);
 
 				// Menghapus pesan yang mengandung media
 				await sock.sendMessage(sender, { delete: msg.key });
@@ -614,9 +694,9 @@ END:VCARD`;
 				return;
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⚠️ Link terdeteksi dan telah dihapus karena fitur Anti-Link aktif.",
-			});
+			await sock.reply(
+				"⚠️ Link terdeteksi dan telah dihapus karena fitur Anti-Link aktif.",
+			);
 			await sock.sendMessage(sender, { delete: msg.key }); // Menghapus pesan yang mengandung link
 			return; // Stop eksekusi lebih lanjut
 		}
@@ -642,66 +722,10 @@ END:VCARD`;
 						{ quoted: msg },
 					);
 				} else {
-					await sock.sendMessage(sender, {
-						text: "⚠️ Tidak ada respons dari AI.",
-					});
+					await sock.reply("⚠️ Tidak ada respons dari AI.");
 				}
 			} catch (error) {
 				console.error("❌ Error saat menghubungi API:", error);
-			}
-		}
-
-		if (isGroup && antibadConfig[sender]) {
-			try {
-				// Cek apakah teks mengandung kata kasar
-				await containsBadWord(text);
-
-				// Cegah bot menghapus pesannya sendiri atau pesan dari broadcast
-				if (
-					msg.key.fromMe ||
-					sender.includes("@broadcast") ||
-					sender.includes("@newsletter")
-				)
-					return;
-
-				// Ambil informasi grup
-				const groupMetadata = await sock.groupMetadata(sender);
-				const groupMembers = groupMetadata?.participants || [];
-
-				// Cek apakah bot adalah admin
-				const botNumber =
-					sock.user.id.split(":")[0] + "@s.whatsapp.net";
-				const botIsAdmin = groupMembers.some(
-					(member) => member.id === botNumber && member.admin,
-				);
-				if (!botIsAdmin) return;
-
-				// Cek apakah pengirim adalah admin atau owner
-				const participantId = msg.key.participant || sender;
-				if (isAdminOrOwner(participantId, groupMembers)) return;
-
-				// Tambahkan peringatan ke user
-				warnings[participantId] = (warnings[participantId] || 0) + 1;
-				saveWarnings(warnings);
-
-				// Kirim peringatan ke user
-				await sock.sendMessage(sender, {
-					text: `⚠️ Kata kasar terdeteksi!\nPush name: ${senderNumber}\nPeringatan: ${warnings[participantId]}/5.`,
-					mentions: [participantId],
-				});
-
-				// Jika user mencapai 5 peringatan, keluarkan dari grup
-				if (warnings[participantId] >= 5) {
-					await sock.groupParticipantsUpdate(
-						sender,
-						[participantId],
-						"remove",
-					);
-					delete warnings[participantId];
-					saveWarnings(warnings);
-				}
-			} catch (error) {
-				console.error("❌ Error saat memberikan peringatan:", error);
 			}
 		}
 
@@ -752,9 +776,9 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 						// Jika pengguna sudah melebihi batas (5 kali dalam 1 menit)
 						if (userUsage.count >= 5) {
-							await sock.sendMessage(sender, {
-								text: "🚫 Kamu sudah mencapai batas penggunaan command (5 kali per menit). Tunggu sebentar!",
-							});
+							await sock.reply(
+								"🚫 Kamu sudah mencapai batas penggunaan command (5 kali per menit). Tunggu sebentar!",
+							);
 							continue; // Lewati eksekusi plugin
 						}
 

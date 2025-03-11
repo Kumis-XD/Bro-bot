@@ -106,6 +106,7 @@ export default {
 					".clone",
 					".mdl",
 					".sfiledl",
+					".ccdl",
 				].includes(command)
 			) {
 				categories.downloader.push({
@@ -148,7 +149,6 @@ export default {
 					".autosholat",
 					".autoread",
 					".antiopsi",
-					".antibad",
 				].includes(command)
 			) {
 				categories.owner.push({
@@ -162,7 +162,7 @@ export default {
 					title: name,
 					description,
 				});
-			} else if ([".ping", ".api"].includes(command)) {
+			} else if ([".ping", ".api", ".get"].includes(command)) {
 				categories.network.push({
 					id: command,
 					title: name,

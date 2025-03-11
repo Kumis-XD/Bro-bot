@@ -11,11 +11,11 @@ export default {
 
 			// Cek apakah query valid
 			if (!query) {
-				await sock.sendMessage(sender, {
-					text: "⚠️ Harap masukkan query Pinterest!",
-				});
+				await sock.reply("⚠️ Harap masukkan query Pinterest!");
 				return;
 			}
+
+			await sock.reply("⏳ Tunggu sebentar, sedang mengambil image...");
 
 			// Ambil data dari API
 			const response = await axios.get(
@@ -90,13 +90,7 @@ export default {
 			);
 		} catch (error) {
 			console.error(error);
-			await sock.sendMessage(
-				sender,
-				{
-					text: "Terjadi kesalahan saat mengambil data dari Pinterest.",
-				},
-				{ quoted: msg },
-			);
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

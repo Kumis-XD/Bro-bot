@@ -12,25 +12,23 @@ export default {
 
 			// Validasi URL
 			if (!url) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Mohon sertakan link YouTube yang valid!",
-				});
+				return await sock.reply(
+					"⚠️ Mohon sertakan link YouTube yang valid!",
+				);
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil audio...",
-			});
+			await sock.reply("⏳ Tunggu sebentar, sedang mengambil audio...");
 
 			// Gunakan scraper untuk mendapatkan link MP3
 			const response = await savetube.download(url, "mp3");
 
 			// Validasi respons scraper
 			if (!response?.status || !response?.result?.download) {
-				return await sock.sendMessage(sender, {
-					text: `⚠️ Gagal mengunduh audio!\n\n❌ *Error:* ${
+				return await sock.reply(
+					`⚠️ Gagal mengunduh audio!\n\n❌ *Error:* ${
 						response?.error || "Tidak diketahui"
 					}`,
-				});
+				);
 			}
 
 			// Ambil detail audio
@@ -63,9 +61,7 @@ export default {
 			);
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

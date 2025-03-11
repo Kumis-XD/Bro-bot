@@ -12,14 +12,12 @@ export default {
 
 			// Validasi URL
 			if (!url || !url.startsWith("http")) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Mohon sertakan link YouTube yang valid!",
-				});
+				return await sock.reply(
+					"⚠️ Mohon sertakan link YouTube yang valid!",
+				);
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil informasi video...",
-			});
+			await sock.reply("⏳ Tunggu sebentar, sedang mengambil video...");
 
 			// Ambil data video dari API eksternal
 			const { data: response } = await axios.get(
@@ -46,21 +44,15 @@ export default {
 				`📌 *Judul:* ${title}\n` +
 				`🔗 *Link Asli:* ${url}\n`;
 
-			await sock.sendMessage(
-				sender,
-				{
-					video: { url: videoUrl },
-					mimetype: "video/mp4",
-					caption: caption,
-					fileName: `${title}.mp4`,
-				},
-				{ quoted: msg },
-			);
+			await sock.reply(caption, "mp4", {
+				videoUrl: videoUrl,
+				title: title,
+				url: url,
+				fileName: `${title}.mp4`,
+			});
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

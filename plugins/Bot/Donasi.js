@@ -5,7 +5,7 @@ export default {
 	execute: async (sock, sender, text, msg) => {
 		await sock.sendMessage(sender, {
 			image: {
-				url: "https://editor.vreden.my.id/qris2?url=https://cloudkuimages.xyz/uploads/images/67c1ee6cce95c.jpg&nominal=Seiklasnya&expired=Permanent&store=NURQOLBIFADIL",
+				url: "https://editor.vreden.my.id/qris2?url=https://files.catbox.moe/rk1u5n.png&nominal=Seiklasnya&expired=Permanent&store=NURQOLBIFADIL",
 			},
 			caption: `Setiap donasi yang kamu berikan akan digunakan untuk:
 ✅ Menjaga bot tetap online 24/7

@@ -355,6 +355,19 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 	});
 }
 
+export const capcutdl = async (url) => {
+  let { data } = await axios.post('https://3bic.com/api/download', { url }, {
+    headers: {
+      "content-type": "application/json",
+      "origin": "https://3bic.com",
+      "referer": "https://3bic.com/",
+      "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36"
+    }
+  });
+  data.originalVideoUrl = 'https://3bic.com' + data.originalVideoUrl;
+  return data;
+}
+
 export const fvn = {
 	key: { participant: "0@s.whatsapp.net", remoteJid: "status@broadcast" },
 	message: {
@@ -524,7 +537,7 @@ const savetube = {
 				{
 					id: id,
 					downloadType: format === "mp3" ? "audio" : "video",
-					quality: format,
+					quality: format === "mp3" ? "128" : format,
 					key: decrypted.key,
 				},
 			);
@@ -543,7 +556,7 @@ const savetube = {
 					id: id,
 					key: decrypted.key,
 					duration: decrypted.duration,
-					quality: format,
+					quality: format === "mp3" ? "128" : format,
 					downloaded: dl.data.data.downloaded || false,
 				},
 			};

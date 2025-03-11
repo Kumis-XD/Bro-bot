@@ -12,14 +12,12 @@ export default {
 
 			// Validasi query
 			if (!query) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Mohon sertakan judul lagu yang ingin dicari!",
-				});
+				return await sock.reply(
+					"⚠️ Mohon sertakan judul lagu yang ingin dicari!",
+				);
 			}
 
-			await sock.sendMessage(sender, {
-				text: `⏳ Sedang mencari lagu *${query}* di Spotify...`,
-			});
+			await sock.reply(`⏳ Sedang mencari lagu *${query}* di Spotify...`);
 
 			// Ambil data lagu dari API eksternal
 			const { data: response } = await axios.post(
@@ -31,9 +29,9 @@ export default {
 
 			// Validasi respons API
 			if (!response?.data?.tracks || response.data.tracks.length === 0) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Tidak ditemukan lagu yang sesuai! Coba kata kunci lain.",
-				});
+				return await sock.reply(
+					"⚠️ Tidak ditemukan lagu yang sesuai! Coba kata kunci lain.",
+				);
 			}
 
 			// Ambil daftar lagu dari respons API
@@ -111,9 +109,7 @@ export default {
 			);
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

@@ -18,9 +18,7 @@ export default {
 				return;
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil gambar...",
-			});
+			await sock.react("⏱️");
 
 			// Fungsi dengan timeout untuk mencegah 504 Gateway Timeout
 			const fetchWithTimeout = (url, timeout = 15000) => {
@@ -52,6 +50,8 @@ export default {
 				return;
 			}
 
+			await sock.react("✅");
+
 			// Format tanggal menjadi lebih rapi
 			const dateObj = new Date(pin.created_at);
 			const formattedDate = dateObj.toLocaleString("id-ID", {
@@ -71,19 +71,13 @@ export default {
 📅 *Dibuat pada:* ${formattedDate}
 `;
 
-			await sock.sendMessage(
-				sender,
-				{
-					image: { url: pin.url },
-					caption: caption,
-				},
-				{ quoted: msg },
-			);
+			await sock.reply("Pinterest download", "image", {
+				imageUrl: pin.url,
+				caption: caption,
+			});
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.react("❌");
 		}
 	},
 };

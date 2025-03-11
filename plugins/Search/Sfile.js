@@ -12,35 +12,40 @@ export default {
 
 			// Validasi input
 			if (!query) {
-				return await sock.sendMessage(sender, {
-					text: "⚠️ Mohon masukkan query Sfile yang ingin dicari!",
-				});
+				return await sock.reply(
+					"⚠️ Mohon masukkan query Sfile yang ingin dicari!",
+				);
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mencari file...",
-			});
+			await sock.reply(
+				`⏳ Tunggu sebentar, sedang mencari file *${query}*...`,
+			);
 
 			// Ambil data dari fungsi `SFile`
 			const result = await SFile(query);
 
 			// Validasi hasil
 			if (!result || !result.status || result.status === "error") {
-				return await sock.sendMessage(sender, {
-					text:
-						result.message ||
-						"❌ Gagal menemukan file. Pastikan URL yang diberikan benar!",
-				});
+				return await sock.sendMessage(
+					sender,
+					{
+						text:
+							result.message ||
+							"❌ Gagal menemukan file. Pastikan URL yang diberikan benar!",
+					},
+					{ quoted: msg },
+				);
 			}
 
 			// Ambil hasil pertama dari pencarian
 			const file = result.result[0];
-			console.log(result.result);
 
 			// Buat teks detail file
 			let fileDetails = `*📂 SFILE DOWNLOADER*\n\n`;
 			fileDetails += `📌 *Nama File:* ${file.judul}\n`;
-			fileDetails += `📏 *Ukuran:* ${file.fileSize || "Tidak diketahui"}\n`;
+			fileDetails += `📏 *Ukuran:* ${
+				file.fileSize || "Tidak diketahui"
+			}\n`;
 			fileDetails += `🔗 *Link:* ${file.href}`;
 
 			// Kirim hasil pencarian dengan tampilan interaktif
@@ -68,6 +73,11 @@ export default {
 							buttonText: { displayText: "Download" },
 							type: 1,
 						},
+						{
+							buttonId: `.sfiles ${query}`,
+							buttonText: { displayText: "Search again" },
+							type: 1,
+						},
 					],
 					headerType: 1,
 					viewOnce: true,
@@ -76,9 +86,7 @@ export default {
 			);
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

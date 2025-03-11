@@ -1,22 +1,23 @@
 import axios from "axios";
 
 async function downloadTrack(url) {
-    const apiUrl = 'https://spotymate.com/api/download-track';
-    const data = {
-        url: url
-    };
-    const headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36',
-        'Referer': 'https://spotymate.com/'
-    };
+	const apiUrl = "https://spotymate.com/api/download-track";
+	const data = {
+		url: url,
+	};
+	const headers = {
+		"Content-Type": "application/json",
+		"User-Agent":
+			"Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36",
+		Referer: "https://spotymate.com/",
+	};
 
-    try {
-        const response = await axios.post(apiUrl, data, { headers: headers });
-        return response.data;
-    } catch (error) {
-        throw new Error(error.response ? error.response.data : error.message);
-    }
+	try {
+		const response = await axios.post(apiUrl, data, { headers: headers });
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response ? error.response.data : error.message);
+	}
 }
 
 export default {
@@ -31,24 +32,18 @@ export default {
 
 			// Cek apakah URL valid
 			if (!url) {
-				await sock.sendMessage(sender, {
-					text: "⚠️ Harap masukkan link Spotify yang valid!",
-				});
+				await sock.reply("⚠️ Harap masukkan link Spotify yang valid!");
 				return;
 			}
 
-			await sock.sendMessage(sender, {
-				text: "⏳ Tunggu sebentar, sedang mengambil lagu...",
-			});
+			await sock.reply("⏳ Tunggu sebentar, sedang mengambil lagu...");
 
 			// Panggil API untuk mendapatkan data lagu
 			const result = await downloadTrack(url);
 
 			// Validasi data respons
 			if (!result.file_url) {
-				await sock.sendMessage(sender, {
-					text: "⚠️ Gagal mengambil lagu! Coba link lain.",
-				});
+				await sock.reply("⚠️ Gagal mengambil lagu! Coba link lain.");
 				return;
 			}
 
@@ -61,10 +56,11 @@ export default {
 					fileName: `brobot.mp3`,
 					contextInfo: {
 						externalAdReply: {
-						  showAdAttribution: true,
+							showAdAttribution: true,
 							title: "「 RESULT SPOTIFY 」",
-							body: '',
-							thumbnailUrl: "https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg",
+							body: "",
+							thumbnailUrl:
+								"https://i.ibb.co.com/32kGwr0/8b11a86980c64720a41ec22332a83115.jpg",
 							renderLargerThumbnail: true,
 							mediaType: 1,
 							mediaUrl: url,
@@ -76,9 +72,7 @@ export default {
 			);
 		} catch (error) {
 			console.error("❌ Error:", error);
-			await sock.sendMessage(sender, {
-				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
-			});
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
 		}
 	},
 };

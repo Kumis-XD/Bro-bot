@@ -6,6 +6,7 @@ export default {
 	description: "Debuging parameter & endpoint.",
 	execute: async (sock, sender, text, msg) => {
 		const budy = typeof text === "string" ? text : "";
+		if (msg.key.fromMe) return;
 
 		// Fungsi untuk mengembalikan hasil dengan format JSON atau string
 		function Return(result) {

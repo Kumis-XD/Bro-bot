@@ -14,7 +14,7 @@ export default {
 			});
 		}
 
-		await sock.sendMessage(sender, { text: "Please Wait..." });
+		await sock.reply("⏳ Tunggu sebentar, sedang mengambil file...");
 
 		try {
 			const res = await sfiledl.download(url);
@@ -22,20 +22,14 @@ export default {
 
 			const { filename, filesize, mimeType, result } = res.data;
 
-			await sock.sendMessage(
-				sender,
-				{
-					document: result.buffer,
-					mimetype: "application/zip",
-					fileName: filename.replace(/\.[^/.]+$/, "") + ".zip",
-					caption: `Nama: ${filename}\nUkuran: ${filesize}`,
-				},
-				{ quoted: msg },
-			);
-		} catch (err) {
-			await sock.sendMessage(sender, {
-				text: `Terjadi kesalahan: ${err}`,
+			await sock.reply(`Nama: ${filename}\nUkuran: ${filesize}`, "doc", {
+				url: result.buffer,
+				mimetype: "application/zip",
+				fileName: filename.replace(/\.[^/.]+$/, "") + ".zip",
+				thumbnailUrl: "https://files.catbox.moe/o1e6ny.jpg",
 			});
+		} catch (err) {
+			await sock.react("❌");
 		}
 	},
 };

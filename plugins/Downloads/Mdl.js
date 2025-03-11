@@ -6,16 +6,14 @@ export default {
 	description: "Mengunduh file dari MediaFire melalui API.",
 	execute: async (sock, sender, text, msg) => {
 		if (!text) {
-			return await sock.sendMessage(
-				sender,
-				{ text: "⚠️ Masukkan URL MediaFire!" },
-				{ quoted: msg },
-			);
+			return await sock.reply("⚠️ Masukkan URL MediaFire!");
 		}
 
 		const apiUrl = `https://api.siputzx.my.id/api/d/mediafire?url=${encodeURIComponent(
 			text,
 		)}`;
+
+		await sock.reply("⏳ Tunggu sebentar, sedang mengambil file...");
 
 		try {
 			const response = await fetch(apiUrl);
@@ -50,11 +48,7 @@ export default {
 			);
 		} catch (error) {
 			console.error("❌ Error fetching MediaFire API:", error);
-			await sock.sendMessage(
-				sender,
-				{ text: "❌ Terjadi kesalahan saat mengambil data!" },
-				{ quoted: msg },
-			);
+			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.")
 		}
 	},
 };
