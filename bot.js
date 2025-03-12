@@ -262,7 +262,7 @@ async function startBot() {
 	const lastAdminWelcomeTime = new Map(); // Simpan waktu terakhir sambutan admin
 
 	let configSholat = loadSholat();
-	let chatId = "120363320183359410@g.us";
+	let chatId = ["120363320183359410@g.us", "120363412940534144@g.us"];
 
 	const city = await loadCity(); // Ambil city dari JSON
 	console.log("📍 Kota untuk jadwal sholat:", city);
@@ -566,72 +566,61 @@ END:VCARD`;
 			return urlRegex.test(text);
 		};
 
-		// Regex untuk memeriksa jenis media
-		const isMediaMessage = /image|video|audio|application|document/.test(
-			text,
-		);
-
-		// Fungsi untuk memeriksa apakah pengirim adalah admin atau owner
 		const isAdminOrOwner = (sender, groupMembers) => {
-			// Cek apakah pengirim adalah admin atau owner
 			return groupMembers.some(
 				(member) =>
 					member.id === sender && (member.admin || member.isOwner),
 			);
 		};
 
-		const userId = isGroup
-			? msg.key.participant.split("@")[0]
-			: sender.split("@")[0];
+		const isMediaMessage =
+			msg.message?.imageMessage ||
+			msg.message?.videoMessage ||
+			msg.message?.audioMessage ||
+			msg.message?.documentMessage;
 
-		// Jika media terdeteksi
 		if (isMediaMessage) {
-			console.log("Media terdeteksi: " + text);
 			if (
 				msg.key.fromMe ||
 				sender.includes("@broadcast") ||
 				sender.includes("@newsletter")
-			)
+			) {
 				return;
+			}
 
 			if (isGroup && antimedConfig[sender]) {
-				let groupMetadata = null;
-				let groupMembers = [];
-				let botNumber = sock.user.id.split(":")[0] + "@s.whatsapp.net";
+				// Ambil metadata grup lebih awal
+				const groupMetadata = await sock.groupMetadata(sender);
+				const groupMembers = groupMetadata.participants || [];
+
+				// Ambil daftar admin
+				const botNumber =
+					sock.user.id.split(":")[0] + "@s.whatsapp.net";
 				const groupAdmins = groupMembers
 					.filter((member) => member.admin)
 					.map((member) => member.id);
 				const isBotAdmin = groupAdmins.includes(botNumber);
-				if (!isBotAdmin) {
-					return;
-				}
 
-				if (isGroup) {
-					groupMetadata = await sock.groupMetadata(sender); // Ambil metadata grup
-					groupMembers = groupMetadata.participants || []; // Ambil daftar anggota grup
-				}
+				if (!isBotAdmin) return;
 
+				// Cek apakah pengirim adalah admin atau owner
 				const participantId = msg.key.participant || sender;
-				const senderNumber = participantId.split("@")[0];
+				const isSenderAdmin = isAdminOrOwner(
+					participantId,
+					groupMembers,
+				);
 
-				if (
-					isGroup &&
-					isAdminOrOwner(
-						senderNumber + "@s.whatsapp.net",
-						groupMembers,
-					)
-				) {
-					return; // Jika pengirim adalah admin atau owner, jangan hapus pesan
+				if (isSenderAdmin) {
+					return; // Jangan hapus jika pengirim adalah admin/owner
 				}
 
-				// Mengirim notifikasi
+				// Kirim notifikasi ke grup
 				await sock.reply(
 					"⚠️ Media terdeteksi dan telah dihapus karena fitur Anti-Media aktif.",
 				);
 
-				// Menghapus pesan yang mengandung media
+				// Hapus pesan yang mengandung media
 				await sock.sendMessage(sender, { delete: msg.key });
-				return; // Stop eksekusi lebih lanjut
 			}
 		}
 
@@ -731,7 +720,7 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 					// Jika AntiSpam aktif, lakukan pengecekan batasan command
 					if (config[sender]) {
-						const userUsage = commandUsage.get(userId) || {
+						const userUsage = commandUsage.get(sender) || {
 							count: 0,
 							time: Date.now(),
 						};
@@ -752,7 +741,7 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 
 						// Tambah hitungan penggunaan command
 						userUsage.count += 1;
-						commandUsage.set(userId, userUsage);
+						commandUsage.set(sender, userUsage);
 					}
 
 					// Jika tidak ada pembatasan atau belum mencapai limit, eksekusi command

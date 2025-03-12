@@ -4,11 +4,8 @@ export default {
 	description: "Mention semua anggota grup.",
 	execute: async (sock, sender, text, msg) => {
 		try {
-			let groupId = sender.includes("@g.us");
-			const teksMatch = text.match(/^.tagall\s+(\S+)/);
-			const teks = teksMatch ? teksMatch[1] : null;
-			// Cek apakah perintah dijalankan dalam grup
-			if (!groupId) {
+			// Pastikan perintah dijalankan dalam grup
+			if (!sender.includes("@g.us")) {
 				await sock.sendMessage(sender, {
 					text: "⚠️ Perintah ini hanya bisa digunakan dalam grup!",
 				});
@@ -33,17 +30,13 @@ export default {
 				return;
 			}
 
+			// Ambil pesan setelah ".tagall"
+			let teks = text ? text.replace(/^\.tagall\s*/, "").trim() : "";
+
 			// Buat teks mention untuk semua anggota
-			let mentionText;
-			if (!teks) {
-				mentionText =
-					`👥 *Tag All*\n\n` +
-					participants.map((p) => `@${p.id.split("@")[0]}`).join("\n");
-			} else {
-				mentionText =
-					`👥 *Tag All*\n\nPesan ( ${teks} )\n\n` +
-					participants.map((p) => `@${p.id.split("@")[0]}`).join("\n");
-			}
+			let mentionText =
+				`👥 *Tag All*\n\n${teks ? `Pesan: ${teks}\n\n` : ""}` +
+				participants.map((p) => `@${p.id.split("@")[0]}`).join("\n");
 
 			// Kirim pesan dengan mention semua anggota
 			await sock.sendMessage(

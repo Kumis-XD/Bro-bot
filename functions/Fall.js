@@ -401,7 +401,7 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 			time: prayerTimes["Imsak"],
 			message:
 				"⏰ Imsak telah tiba! Waktu sahur telah selesai. Bersiaplah untuk sholat Subuh. 🕌",
-			audio: "https://files.catbox.moe/olsp7o.mp3", // File audio imsak
+			audio: "https://files.catbox.moe/olsp7o.mp3",
 		},
 		{
 			name: "Fajr (Subuh)",
@@ -435,7 +435,7 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 		},
 	];
 
-	// Jadwalkan pengingat sholat dengan audio
+	// Jadwalkan pengingat sholat dengan audio untuk setiap grup
 	prayerNames.forEach(({ name, time, message, audio }) => {
 		if (!time) return;
 
@@ -450,25 +450,27 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 			0,
 		);
 
-		// Jadwalkan pesan dan audio di waktu sholat
+		// Iterasi ke setiap `chatId`
 		schedule.scheduleJob(reminderTime, async () => {
-			await sock.sendMessage(chatId, {
-				audio: { url: audio },
-				ptt: true,
-				mimetype: "audio/mpeg",
-				contextInfo: {
-					externalAdReply: {
-						showAdAttribution: true,
-						title: message,
-						body: time,
-						thumbnailUrl: "https://files.catbox.moe/v2tdfk.jpg",
-						renderLargerThumbnail: true,
-						mediaType: 1,
-						mediaUrl: "",
-						sourceUrl: audio,
+			for (let chat of chatId) {
+				await sock.sendMessage(chat, {
+					audio: { url: audio },
+					ptt: true,
+					mimetype: "audio/mpeg",
+					contextInfo: {
+						externalAdReply: {
+							showAdAttribution: true,
+							title: message,
+							body: time,
+							thumbnailUrl: "https://files.catbox.moe/v2tdfk.jpg",
+							renderLargerThumbnail: true,
+							mediaType: 1,
+							mediaUrl: "",
+							sourceUrl: audio,
+						},
 					},
-				},
-			});
+				});
+			}
 		});
 	});
 }
