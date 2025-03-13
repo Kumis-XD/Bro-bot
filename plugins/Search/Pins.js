@@ -11,11 +11,15 @@ export default {
 
 			// Cek apakah query valid
 			if (!query) {
-				await sock.reply("⚠️ Harap masukkan query Pinterest!");
+				await sock.sendMessage(sender, {
+					text: "⚠️ Harap masukkan query Pinterest!",
+				});
 				return;
 			}
 
-			await sock.reply("⏳ Tunggu sebentar, sedang mengambil image...");
+			await sock.sendMessage(sender, {
+				text: "⏳ Tunggu sebentar, sedang mengambil gambar...",
+			});
 
 			// Ambil data dari API
 			const response = await axios.get(
@@ -24,73 +28,57 @@ export default {
 				)}`,
 			);
 
-			// Cek apakah response valid
-			if (
-				response.data.status !== 200 ||
-				!response.data.result ||
-				response.data.result.length === 0
-			) {
+			// Validasi response API
+			if (!response.data.result || response.data.result.length === 0) {
 				return sock.sendMessage(
 					sender,
-					{ text: "Tidak ada hasil ditemukan." },
+					{ text: "⚠️ Tidak ada hasil ditemukan." },
 					{ quoted: msg },
 				);
 			}
 
-			const pins = response.data.result.map((pin) => ({
-				header: "Pinterest Image",
-				title: "Klik untuk melihat",
-				description: pin.link,
-				id: `.pindl ${pin.link}`,
+			// Ambil hasil pencarian (maksimal 5 gambar)
+			const images = response.data.result;
+
+			// Buat daftar cards
+			const cards = images.map((img, index) => ({
+				image: { url: img.directLink },
+				title: `Hasil #${index + 1}`,
+				caption: `🔍 *Pencarian:* ${query}\n🔗 *Sumber:* ${img.link}`,
+				footer: "Pinterest Search",
+				buttons: [
+					{
+						name: "quick_reply",
+						buttonParamsJson: JSON.stringify({
+							display_text: "Download Gambar",
+							id: `.pindl ${img.link}`,
+						}),
+					},
+					{
+						name: "cta_url",
+						buttonParamsJson: JSON.stringify({
+							display_text: "Buka di Pinterest",
+							url: img.link,
+						}),
+					},
+				],
 			}));
 
+			// Kirim pesan dengan cards
 			await sock.sendMessage(
 				sender,
 				{
-					image: { url: response.data.result[0].directLink },
-					contextInfo: {
-						externalAdReply: {
-							showAdAttribution: true,
-							mediaType: 1,
-							mediaUrl: response.data.result[0].link,
-							title: "「 Padz x Bro Bot 」",
-							body: "Pinterest Search Result",
-							sourceUrl: response.data.result[0].link,
-							thumbnailUrl: response.data.result[0].directLink,
-							renderLargerThumbnail: true,
-						},
-					},
-					caption: `🔍 *Hasil pencarian untuk:* ${query}`,
-					footer: `© Bro Bot`,
-					mentionedJid: [`${sender}`],
-					buttons: [
-						{
-							buttonId: "action",
-							buttonText: { displayText: "Lihat Semua" },
-							type: 4,
-							nativeFlowInfo: {
-								name: "single_select",
-								paramsJson: JSON.stringify({
-									title: "Pinterest Results",
-									sections: [
-										{
-											title: "Hasil Pencarian",
-											highlight_label: "",
-											rows: pins,
-										},
-									],
-								}),
-							},
-						},
-					],
-					headerType: 1,
-					viewOnce: true,
+					text: `🔍 *Hasil pencarian untuk:* ${query}`,
+					footer: "© Bro Bot",
+					cards: cards,
 				},
 				{ quoted: msg },
 			);
 		} catch (error) {
-			console.error(error);
-			await sock.reply("⚠️ Terjadi kesalahan! Coba lagi nanti.");
+			console.error("❌ Error:", error);
+			await sock.sendMessage(sender, {
+				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
+			});
 		}
 	},
 };

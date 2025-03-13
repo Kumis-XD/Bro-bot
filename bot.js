@@ -6,7 +6,8 @@ import {
 	fetchLatestBaileysVersion,
 	downloadContentFromMessage,
 	Browsers,
-} from "@seaavey/baileys";
+	getContentType,
+} from "@fizzxydev/baileys-pro";
 import fs from "fs-extra";
 import ora from "ora";
 import chalk from "chalk";
@@ -27,6 +28,7 @@ import { loadSholat } from "./plugins/Bot/Autosholat.js";
 import { loadAntispam } from "./plugins/Bot/Antispam.js";
 import { loadAntilink } from "./plugins/Bot/Antilink.js";
 import { loadAutoAI } from "./plugins/Bot/Autoai.js";
+import { loadAntiTagSW } from "./plugins/Group/AntiTagSw.js";
 import {
 	schedulePrayerReminders,
 	groupResponse_Remove,
@@ -39,6 +41,7 @@ import { loadAntimedia } from "./plugins/Bot/Antimedia.js";
 dotenv.config();
 
 const commandUsage = new Map();
+const configAntiTag = loadAntiTagSW();
 const antiConfig = loadAntilink();
 const antimedConfig = loadAntimedia();
 const store = makeInMemoryStore({
@@ -215,8 +218,30 @@ async function startBot() {
 		const { connection, lastDisconnect } = update;
 		if (connection === "close") {
 			let reason = new Boom(lastDisconnect?.error)?.output.statusCode;
-			if (
-				reason === DisconnectReason.badSession ||
+			if (reason === DisconnectReason.badSession) {
+				if (fs.existsSync(process.env.SESSIONS_PATH)) {
+					fs.rm(
+						process.env.SESSIONS_PATH,
+						{ recursive: true },
+						(err) => {
+							if (err) {
+								console.error(
+									chalk.red.bold(
+										`❌ Error deleting session files: ${err}`,
+									),
+								);
+							} else {
+								console.log(
+									chalk.green.bold(
+										`🗑️ Session files deleted. Restarting in 5 seconds...`,
+									),
+								);
+							}
+						},
+					);
+				}
+				setTimeout(() => startBot(), 5000);
+			} else if (
 				reason === DisconnectReason.connectionClosed ||
 				reason === DisconnectReason.connectionLost ||
 				reason === DisconnectReason.connectionReplaced ||
@@ -262,7 +287,11 @@ async function startBot() {
 	const lastAdminWelcomeTime = new Map(); // Simpan waktu terakhir sambutan admin
 
 	let configSholat = loadSholat();
-	let chatId = ["120363320183359410@g.us", "120363412940534144@g.us"];
+	let chatId = [
+		"120363320183359410@g.us",
+		"120363412686013870@g.us",
+		"120363320769334958@g.us",
+	];
 
 	const city = await loadCity(); // Ambil city dari JSON
 	console.log("📍 Kota untuk jadwal sholat:", city);
@@ -300,7 +329,20 @@ async function startBot() {
 
 	sock.ev.on("messages.upsert", async (m) => {
 		const msg = m.messages[0];
-		if (!msg.message || !msg.key.remoteJid) return;
+		if (!msg.message) return;
+		msg.message =
+			Object.keys(msg.message)[0] === "ephemeralMessage"
+				? msg.message.ephemeralMessage.message
+				: msg.message;
+		if (msg.key && msg.key.remoteJid === "status@broadcast") return;
+		if (!sock.public && !msg.key.fromMe && m.type === "notify") return;
+		if (msg.key.id.startsWith("BAE5") && msg.key.id.length === 16) return;
+		if (
+			msg.key.id.startsWith("PADZ") ||
+			msg.key.id.startsWith("Padz") ||
+			msg.key.id.startsWith("padz")
+		)
+			return;
 		let config = loadConfig();
 		let configai = loadAutoAI();
 		if (config.autoread) {
@@ -532,6 +574,9 @@ END:VCARD`;
 				?.nativeFlowResponseMessage || // Gunakan hasil parse yang aman
 			"";
 		const quotd =
+			msg.message ||
+			msg.message?.groupStatusMentionMessage ||
+			msg.message?.protocolMessage ||
 			msg.message?.imageMessage ||
 			msg.message?.videoMessage ||
 			msg.message?.documentMessage ||
@@ -569,9 +614,46 @@ END:VCARD`;
 		const isAdminOrOwner = (sender, groupMembers) => {
 			return groupMembers.some(
 				(member) =>
-					member.id === sender && (member.admin || member.isOwner),
+					member.id === sender && (member.admin || member.owner),
 			);
 		};
+
+		if (configAntiTag[sender]) {
+			try {
+				const groupMetadata = await sock.groupMetadata(sender);
+				const groupMembers = groupMetadata.participants || [];
+
+				if (
+					getContentType(msg.message) === "groupStatusMentionMessage"
+				) {
+					// Pastikan pengirim bukan bot & bukan admin
+					const isSenderAdmin = isAdminOrOwner(
+						senderNumber + "@s.whatsapp.net",
+						groupMembers,
+					);
+					if (!msg.key.fromMe && !isSenderAdmin) {
+						await sock.reply(
+							`Kontol, pegi lu jauh" nyusahin orang lagi chat aja ngentd, pake tag" segala si anjing😡`,
+						);
+
+						// Hapus pesan
+						await sock.sendMessage(sender, { delete: msg.key });
+
+						// Dapatkan ID peserta
+						const participant = msg.key.participant || sender;
+
+						// Kick peserta dari grup
+						await sock.groupParticipantsUpdate(
+							sender,
+							[participant],
+							"remove",
+						);
+					}
+				}
+			} catch (error) {
+				console.error("❌ Error saat menangani AntiTagSW:", error);
+			}
+		}
 
 		const isMediaMessage =
 			msg.message?.imageMessage ||

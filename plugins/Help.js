@@ -121,9 +121,13 @@ export default {
 					description,
 				});
 			} else if (
-				[".group", ".tagall", ".antilink", ".antimedia"].includes(
-					command,
-				)
+				[
+					".group",
+					".tagall",
+					".antilink",
+					".antimedia",
+					".antitagsw",
+				].includes(command)
 			) {
 				categories.group.push({
 					id: command,

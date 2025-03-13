@@ -4,6 +4,7 @@ import { loadAutoAI } from "./Autoai.js";
 import { loadAntispam } from "./Antispam.js";
 import { loadAntilink } from "./Antilink.js";
 import { loadAntimedia } from "./Antimedia.js";
+import { loadAntiTagSW } from "../Group/AntiTagSw.js";
 
 export default {
 	command: ".cek",
@@ -16,6 +17,7 @@ export default {
 		const antisConfig = loadAntispam();
 		const antilinkConfig = loadAntilink();
 		const antimedConfig = loadAntimedia();
+		const configAntiTag = loadAntiTagSW();
 
 		let pesan = `- *Autosholat*: ${
 			sholatConfig.autosholat ? "✅ AKTIF" : "❌ NONAKTIF"
@@ -24,7 +26,8 @@ export default {
 - *Autoai*: ${configai[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
 - *Antispam*: ${antisConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
 - *Antilink*: ${antilinkConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
-- *Antimedia*: ${antimedConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}`;
+- *Antimedia*: ${antimedConfig[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}
+- *AntiTagsw*: ${configAntiTag[sender] ? "✅ AKTIF" : "❌ NONAKTIF"}`;
 		await sock.reply(pesan);
 	},
 };

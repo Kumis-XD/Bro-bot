@@ -1,7 +1,7 @@
 export default {
 	command: ".group",
 	name: "「 GROUP ACTION 」",
-	description: "Aksi untuk group.",
+	description: "Aksi untuk mengelola grup.",
 	async execute(sock, sender, text, msg) {
 		const isGroup = sender.includes("@g.us");
 		if (!isGroup)
@@ -15,147 +15,148 @@ export default {
 				text: "❌ Kamu harus menjadi admin untuk menggunakan perintah ini!",
 			});
 
-		const quotedMessage = {
-			key: {
-				remoteJid: "0",
-				fromMe: false,
-				participant: "@s.whatsapp.net",
-			},
-			message: {
-				conversation: "Undangan chat group",
-			},
-		};
-
 		const args = text.split(" ").slice(1);
-		const action = args[0];
+		const action = args[0]?.toLowerCase();
+		const groupId = sender;
 
 		if (!action) {
+			const helpMessage =
+				`⚙️ *Pengaturan Grup*\n\n` +
+				`📌 *.group name [nama baru]* → Ubah nama grup\n` +
+				`📌 *.group desc [deskripsi baru]* → Ubah deskripsi grup\n` +
+				`📌 *.group lock* → Hanya admin yang bisa mengirim pesan\n` +
+				`📌 *.group unlock* → Semua anggota bisa mengirim pesan\n` +
+				`📌 *.group add [nomor]* → Tambah anggota\n` +
+				`📌 *.group remove [nomor]* → Hapus anggota\n` +
+				`📌 *.group promote [nomor]* → Jadikan admin\n` +
+				`📌 *.group demote [nomor]* → Hapus admin`;
+
 			return sock.sendMessage(
 				sender,
-				{
-					text: `⚙️ *Pengaturan Grup*\n\nGunakan perintah berikut:\n\n📌 *.group name [nama baru]* → Ubah nama grup\n📌 *.group desc [deskripsi baru]* → Ubah deskripsi grup\n📌 *.group lock* → Hanya admin yang bisa mengirim pesan\n📌 *.group unlock* → Semua anggota bisa mengirim pesan\n📌 *.group add [nomor]* → Tambah anggota\n📌 *.group remove [nomor]* → Hapus anggota\n📌 *.group promote [nomor]* → Jadikan admin\n📌 *.group demote [nomor]* → Hapus admin`,
-				},
-				{ quoted: quotedMessage },
+				{ text: helpMessage },
+				{ quoted: msg },
 			);
 		}
 
-		const groupId = sender;
-
-		switch (action.toLowerCase()) {
-			case "name":
-				const newName = args.slice(1).join(" ");
-				if (!newName)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan nama grup baru!",
+		try {
+			switch (action) {
+				case "name":
+					const newName = args.slice(1).join(" ");
+					if (!newName)
+						return sock.sendMessage(sender, {
+							text: "❌ Harap masukkan nama grup baru!",
+						});
+					await sock.groupUpdateSubject(groupId, newName);
+					sock.sendMessage(sender, {
+						text: `✅ Nama grup berhasil diubah menjadi *${newName}*`,
 					});
-				await sock.groupUpdateSubject(groupId, newName);
-				sock.sendMessage(sender, {
-					text: `✅ Nama grup berhasil diubah menjadi *${newName}*`,
-				});
-				break;
+					break;
 
-			case "desc":
-				const newDesc = args.slice(1).join(" ");
-				if (!newDesc)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan deskripsi baru!",
+				case "desc":
+					const newDesc = args.slice(1).join(" ");
+					if (!newDesc)
+						return sock.sendMessage(sender, {
+							text: "❌ Harap masukkan deskripsi baru!",
+						});
+					await sock.groupUpdateDescription(groupId, newDesc);
+					sock.sendMessage(sender, {
+						text: "✅ Deskripsi grup berhasil diubah!",
 					});
-				await sock.groupUpdateDescription(groupId, newDesc);
-				sock.sendMessage(sender, {
-					text: `✅ Deskripsi grup berhasil diubah!`,
-				});
-				break;
+					break;
 
-			case "lock":
-				await sock.groupSettingUpdate(groupId, "announcement");
-				sock.sendMessage(sender, {
-					text: "✅ Grup dikunci! Sekarang hanya admin yang bisa mengirim pesan.",
-				});
-				break;
-
-			case "unlock":
-				await sock.groupSettingUpdate(groupId, "not_announcement");
-				sock.sendMessage(sender, {
-					text: "✅ Grup dibuka! Sekarang semua anggota bisa mengirim pesan.",
-				});
-				break;
-
-			case "add":
-				const addNumber =
-					args[1]?.replace(/\D/g, "") + "@s.whatsapp.net";
-				if (!addNumber)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan nomor anggota yang ingin ditambahkan!",
+				case "lock":
+					await sock.groupSettingUpdate(groupId, "announcement");
+					sock.sendMessage(sender, {
+						text: "✅ Grup dikunci! Sekarang hanya admin yang bisa mengirim pesan.",
 					});
-				await sock.groupParticipantsUpdate(groupId, [addNumber], "add");
-				sock.sendMessage(sender, {
-					text: `✅ Berhasil menambahkan *${args[1]}* ke grup!`,
-				});
-				break;
+					break;
 
-			case "remove":
-				const removeNumber =
-					args[1]?.replace(/\D/g, "") + "@s.whatsapp.net";
-				if (!removeNumber)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan nomor anggota yang ingin dihapus!",
+				case "unlock":
+					await sock.groupSettingUpdate(groupId, "not_announcement");
+					sock.sendMessage(sender, {
+						text: "✅ Grup dibuka! Sekarang semua anggota bisa mengirim pesan.",
 					});
-				await sock.groupParticipantsUpdate(
-					groupId,
-					[removeNumber],
-					"remove",
-				);
-				sock.sendMessage(sender, {
-					text: `✅ Berhasil mengeluarkan *${args[1]}* dari grup!`,
-				});
-				break;
+					break;
 
-			case "promote":
-				const promoteNumber =
-					args[1]?.replace(/\D/g, "") + "@s.whatsapp.net";
-				if (!promoteNumber)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan nomor yang ingin dijadikan admin!",
+				case "add":
+				case "remove":
+				case "promote":
+				case "demote":
+					// Cek apakah ada quoted
+					const quoted =
+						msg.message?.extendedTextMessage?.contextInfo
+							?.quotedMessage;
+					const participantFromQuoted =
+						msg.message?.extendedTextMessage?.contextInfo
+							?.participant;
+
+					let targetNumber;
+					if (quoted && participantFromQuoted) {
+						// Jika ada quoted, gunakan participant dari quoted
+						targetNumber =
+							participantFromQuoted.replace(/\D/g, "") +
+							"@s.whatsapp.net";
+					} else if (args[1]) {
+						// Jika tidak ada quoted, gunakan nomor yang diketik
+						targetNumber =
+							args[1].replace(/\D/g, "") + "@s.whatsapp.net";
+					} else {
+						return sock.sendMessage(sender, {
+							text: `❌ Harap reply pesan anggota atau masukkan nomor untuk ${
+								action === "add" ? "ditambahkan" : "dikeluarkan"
+							}!`,
+						});
+					}
+
+					if (!/^\d+@s.whatsapp.net$/.test(targetNumber))
+						return sock.sendMessage(sender, {
+							text: "❌ Nomor tidak valid! Gunakan format: *.group add 628xxx* atau reply pesan pengguna.",
+						});
+
+					await sock.groupParticipantsUpdate(
+						groupId,
+						[targetNumber],
+						action,
+					);
+					sock.sendMessage(sender, {
+						text: `✅ *${targetNumber.replace(
+							"@s.whatsapp.net",
+							"",
+						)}* ${
+							action === "add"
+								? "berhasil ditambahkan ke grup!"
+								: action === "remove"
+								? "telah dikeluarkan dari grup!"
+								: action === "promote"
+								? "sekarang adalah admin grup!"
+								: "bukan lagi admin grup!"
+						}`,
 					});
-				await sock.groupParticipantsUpdate(
-					groupId,
-					[promoteNumber],
-					"promote",
-				);
-				sock.sendMessage(sender, {
-					text: `✅ *${args[1]}* sekarang adalah admin grup!`,
-				});
-				break;
+					break;
 
-			case "demote":
-				const demoteNumber =
-					args[1]?.replace(/\D/g, "") + "@s.whatsapp.net";
-				if (!demoteNumber)
-					return sock.sendMessage(sender, {
-						text: "❌ Harap masukkan nomor yang ingin dihapus sebagai admin!",
+				default:
+					sock.sendMessage(sender, {
+						text: "❌ Perintah tidak ditemukan! Ketik *.group* untuk melihat daftar perintah.",
 					});
-				await sock.groupParticipantsUpdate(
-					groupId,
-					[demoteNumber],
-					"demote",
-				);
-				sock.sendMessage(sender, {
-					text: `✅ *${args[1]}* bukan lagi admin grup!`,
-				});
-				break;
-
-			default:
-				sock.sendMessage(sender, {
-					text: "❌ Perintah tidak ditemukan! Ketik *.group* untuk melihat daftar perintah.",
-				});
-				break;
+			}
+		} catch (error) {
+			console.error("❌ Error:", error);
+			sock.sendMessage(sender, {
+				text: "⚠️ Terjadi kesalahan! Coba lagi nanti.",
+			});
 		}
 	},
 };
 
+// Fungsi untuk mengecek apakah pengguna adalah admin
 async function checkAdmin(sock, groupId, user) {
-	const groupMetadata = await sock.groupMetadata(groupId);
-	const participants = groupMetadata.participants;
-	const userInfo = participants.find((p) => p.id === user);
-	return userInfo?.admin === "admin" || userInfo?.admin === "superadmin";
+	try {
+		const groupMetadata = await sock.groupMetadata(groupId);
+		const participants = groupMetadata.participants;
+		const userInfo = participants.find((p) => p.id === user);
+		return userInfo?.admin === "admin" || userInfo?.admin === "superadmin";
+	} catch (error) {
+		console.error("❌ Error saat mengecek admin:", error);
+		return false;
+	}
 }

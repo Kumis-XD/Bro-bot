@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default {
 	command: ".yts",
-	name: "「 TOUTUBE SEARCH 」",
+	name: "「 YOUTUBE SEARCH 」",
 	description: "Cari video YouTube berdasarkan query.",
 	execute: async (sock, sender, text, msg) => {
 		try {
@@ -35,65 +35,47 @@ export default {
 				return;
 			}
 
-			// Ambil semua hasil pencarian
+			// Ambil hasil pencarian (maksimal 5 video)
 			const results = data.data.data;
 
-			// Buat sections dengan dua opsi (MP4 & MP3)
-			const sections = results.map((video, index) => ({
+			// Buat cards
+			const cards = results.map((video, index) => ({
+				image: { url: video.thumbnail },
 				title: `${index + 1}. ${video.title}`,
-				rows: [
+				caption: `📺 *${video.title}*\n👤 *${video.author}*\n⏱️ ${video.duration} | 👀 ${video.views} views\n\n📌 Pilih format download di bawah.`,
+				footer: "YouTube Search",
+				buttons: [
 					{
-						header: "🎥 Download MP4",
-						title: "Download Video",
-						description: `📺 ${video.author} | ⏱️ ${video.duration} | 👀 ${video.views} views`,
-						id: `.ytmp4 ${video.url}`,
+						name: "quick_reply",
+						buttonParamsJson: JSON.stringify({
+							display_text: "🎥 Download MP4",
+							id: `.ytmp4 ${video.url}`,
+						}),
 					},
 					{
-						header: "🎵 Download MP3",
-						title: "Download Audio",
-						description: `🎤 ${video.author} | ⏱️ ${video.duration}`,
-						id: `.ytmp3 ${video.url}`,
+						name: "quick_reply",
+						buttonParamsJson: JSON.stringify({
+							display_text: "🎵 Download MP3",
+							id: `.ytmp3 ${video.url}`,
+						}),
+					},
+					{
+						name: "cta_url",
+						buttonParamsJson: JSON.stringify({
+							display_text: "🔗 Tonton di YouTube",
+							url: video.url,
+						}),
 					},
 				],
 			}));
 
-			// Kirim pesan interaktif dengan daftar video + opsi download MP4/MP3
+			// Kirim hasil dalam format cards
 			await sock.sendMessage(
 				sender,
 				{
-					image: { url: results[0].thumbnail },
-					contextInfo: {
-						externalAdReply: {
-							showAdAttribution: true,
-							mediaType: 1,
-							mediaUrl: results[0].url,
-							title: "「 Padz x Bro Bot 」",
-							body: "Hasil pencarian YouTube",
-							sourceUrl: results[0].url,
-							thumbnailUrl: "https://files.fotoenhancer.com/uploads/4f3f4c83-2e52-4296-8063-12756c823d05.jpg",
-							renderLargerThumbnail: true,
-						},
-					},
-					caption: `📺 *Hasil Pencarian YouTube*\n🔍 *Query:* ${query}\n\n📌 Pilih video dan format download di bawah.`,
+					text: `📺 *Hasil Pencarian YouTube*\n🔍 *Query:* ${query}`,
 					footer: "© Bro Bot",
-					buttons: [
-						{
-							buttonId: "action",
-							buttonText: {
-								displayText: "Pilih Video 🎥🎵",
-							},
-							type: 4,
-							nativeFlowInfo: {
-								name: "single_select",
-								paramsJson: JSON.stringify({
-									title: "Pilih Video & Format",
-									sections,
-								}),
-							},
-						},
-					],
-					headerType: 1,
-					viewOnce: true,
+					cards: cards,
 				},
 				{ quoted: msg },
 			);

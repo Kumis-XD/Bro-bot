@@ -148,6 +148,8 @@ export const groupResponse_Remove = async (sock, update) => {
 				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
 			}
 
+			const code = await sock.groupInviteCode(update.id);
+
 			if (update.action === "remove") {
 				await sock.sendMessage(update.id, {
 					image: { url: ppuser },
@@ -179,17 +181,29 @@ export const groupResponse_Welcome = async (sock, update) => {
 				ppuser = "https://files.catbox.moe/l4b7jp.jpg";
 			}
 
+			const code = await sock.groupInviteCode(update.id);
+
 			if (update.action === "add") {
-				await sock.sendMessage(update.id, {
-					image: { url: ppuser },
-					caption: `╭━━━━━━━━━━━━━━━┅•ิ.•ஐ\n│ *📌Welcome To ${
-						metadata.subject
-					}* \n└┬────────────┾•ิ.•┽\n┌┤Haii👋 @${
-						num.split("@")[0]
-					}\n││ \n││——[ *ɪɴᴛʀᴏ* ]——\n││ 📛ɴᴀᴍᴀ:\n││ 📅ᴜᴍᴜʀ:\n││ ⚽ʜᴏʙɪ:\n││ 🏢ᴀsᴋᴏᴛ: \n└────────────┾•ิ.•┽`,
-					footer: metadata.subject,
-					mentions: [num],
-				});
+				await sock.sendMessage(
+					update.id,
+					{
+						groupInvite: {
+							subject: metadata.subject,
+							jid: num,
+							text: `━━━━━━━━━━━━━━━┅•ิ.•ஐ\n│ *📌Welcome To ${
+								metadata.subject
+							}* \n└┬────────────┾•ิ.•┽\n┌┤Haii👋 @${
+								num.split("@")[0]
+							}\n││ \n││——[ *ɪɴᴛʀᴏ* ]——\n││ 📛ɴᴀᴍᴀ:\n││ 📅ᴜᴍᴜʀ:\n││ ⚽ʜᴏʙɪ:\n││ 🏢ᴀsᴋᴏᴛ: \n└────────────┾•ิ.•`,
+							inviteCode: code,
+							inviteExpiration: 86400 * 3,
+						},
+						mentions: [num],
+					},
+					{
+						getProfilePicUrl: ppuser,
+					},
+				);
 			}
 		}
 	} catch (err) {
