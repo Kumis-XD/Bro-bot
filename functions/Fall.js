@@ -484,6 +484,7 @@ export async function schedulePrayerReminders(sock, chatId, city) {
 						},
 					},
 				});
+				await sock.groupSettingUpdate(chat, "announcement");
 			}
 		});
 	});
