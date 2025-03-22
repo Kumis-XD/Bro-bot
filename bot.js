@@ -83,17 +83,24 @@ async function loadCity() {
 }
 
 async function banner() {
+  console.clear();
 	cfonts.say("BRO-BOT", {
-		font: "block", // Gaya teks (pilihan: block, simple, 3d, shade, dll.)
-		align: "center", // Posisi teks (left, center, right)
-		colors: ["cyan", "blue"], // Warna teks
-		background: "black", // Warna latar belakang
-		letterSpacing: 1, // Spasi antar huruf
-		lineHeight: 1, // Tinggi garis
-		space: true, // Menambah spasi di sekitar teks
-		gradient: ["red", "yellow"], // Gradasi warna teks
-		independentGradient: true, // Gunakan gradasi per huruf
-		transitionGradient: true, // Efek transisi warna
+		font: "block",
+		align: "center",
+		colors: ["cyan", "blue"],
+		background: "black",
+		letterSpacing: 1,
+		lineHeight: 1,
+		space: true,
+		gradient: ["red", "yellow"],
+		independentGradient: true,
+		transitionGradient: true,
+	});
+
+	cfonts.say("WhatsApp", {
+		font: "console",
+		align: "center",
+		colors: ["green"],
 	});
 }
 
