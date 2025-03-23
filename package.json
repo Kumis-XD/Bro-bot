@@ -4,7 +4,10 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"start": "node index.js"
+		"start": "node bot.js",
+		"tele": "node tele.js",
+		"dc": "node discord.js",
+		"sel": "node index.js"
 	},
 	"keywords": [
 		"Bot Whatsapp",
@@ -31,8 +34,10 @@
 		"chalk": "^5.4.1",
 		"cheerio": "^1.0.0",
 		"child_process": "^1.0.2",
+		"cors": "^2.8.5",
 		"discord.js": "^14.18.0",
 		"dotenv": "^16.4.7",
+		"express": "^4.21.2",
 		"fake-useragent": "^1.0.1",
 		"fs-extra": "^11.3.0",
 		"gradient-string": "^3.0.0",
@@ -46,12 +51,14 @@
 		"node-fetch": "^3.3.2",
 		"node-schedule": "^2.1.1",
 		"node-telegram-bot-api": "^0.66.0",
+		"nodemon": "^3.1.9",
 		"npm": "^11.2.0",
 		"open-graph-scraper": "^6.9.0",
 		"ora": "^8.2.0",
 		"pino": "^9.6.0",
 		"prompts": "^2.4.2",
 		"ruhend-scraper": "^8.1.1",
+		"socket.io": "^4.8.1",
 		"systeminformation": "^5.25.11"
 	},
 	"description": "Bro-Bot yang dirancang sepenuh hati oleh Padz dimana beliau adalah programer fullstack."

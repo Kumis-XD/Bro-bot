@@ -36,12 +36,9 @@ async function banner() {
 		name: "script",
 		message: chalk.cyan("Pilih script yang ingin dijalankan:"),
 		choices: [
-			{ title: chalk.green("Bot WhatsApp (bot.js)"), value: "bot.js" },
-			{ title: chalk.blue("Bot Telegram (tele.js)"), value: "tele.js" },
-			{
-				title: chalk.magenta("Bot Discord (discord.js)"),
-				value: "discord.js",
-			},
+			{ title: `${chalk.green("🤖 Bot WhatsApp (bot.js)")}`, value: "bot.js" },
+			{ title: `${chalk.blue("📡 Bot Telegram (tele.js)")}`, value: "tele.js" },
+			{ title: `${chalk.magenta("🎮 Bot Discord (discord.js)")}`, value: "discord.js" },
 		],
 	});
 
@@ -50,14 +47,14 @@ async function banner() {
 	if (!response.script) {
 		console.log(
 			logSymbols.warning,
-			chalk.yellow("Tidak ada pilihan yang dipilih. Keluar..."),
+			chalk.yellow("⚠️ Tidak ada pilihan yang dipilih. Keluar..."),
 		);
 		process.exit(0);
 	}
 
 	console.log(
 		logSymbols.info,
-		chalk.cyan(`Menjalankan ${response.script}...\n`),
+		chalk.cyan(`🚀 Menjalankan ${response.script}...\n`),
 	);
 
 	const child = spawn("node", [response.script], { stdio: "inherit" });
@@ -66,14 +63,12 @@ async function banner() {
 		if (code === 0) {
 			console.log(
 				logSymbols.success,
-				chalk.green(`Proses ${response.script} selesai dengan sukses!`),
+				chalk.green(`✅ Proses ${response.script} selesai dengan sukses!`),
 			);
 		} else {
 			console.log(
 				logSymbols.error,
-				chalk.red(
-					`Proses ${response.script} gagal dengan kode keluar: ${code}`,
-				),
+				chalk.red(`❌ Proses ${response.script} gagal dengan kode keluar: ${code}`),
 			);
 		}
 	});
@@ -81,7 +76,7 @@ async function banner() {
 	child.on("error", (err) => {
 		console.log(
 			logSymbols.error,
-			chalk.red(`Terjadi kesalahan saat menjalankan ${response.script}:`),
+			chalk.red(`🔥 Terjadi kesalahan saat menjalankan ${response.script}:`),
 			err,
 		);
 	});

@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const sessionPath = path.resolve(__dirname, "../../sessions/");
+const sessionPath = path.resolve(__dirname, "../../whatsapp/");
 
 export default {
 	command: ".clear",

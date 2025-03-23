@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dashboard Chat - Bro Bot</title>
+		<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+		<link
+			href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+			rel="stylesheet" />
+	</head>
+	<body class="bg-gray-900 text-white">
+		<nav class="bg-white border-gray-200 dark:bg-gray-900">
+			<div
+				class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+				<a
+					href="/"
+					class="flex items-center space-x-3 rtl:space-x-reverse">
+					<img
+						src="https://flowbite.com/docs/images/logo.svg"
+						class="h-8"
+						alt="Flowbite Logo" />
+					<span
+						class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+						>Bro bot</span
+					>
+				</a>
+				<div
+					class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+					<button
+						class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+						type="button"
+						data-drawer-target="drawer-navigation"
+						data-drawer-show="drawer-navigation"
+						aria-controls="drawer-navigation">
+						<span
+							class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-transparent group-hover:dark:bg-transparent">
+							<svg
+								class="w-6 h-6 text-gray-800 dark:text-white"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								fill="none"
+								viewBox="0 0 24 24">
+								<path
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-width="2"
+									d="M5 7h14M5 12h14M5 17h14" />
+							</svg>
+						</span>
+					</button>
+				</div>
+			</div>
+		</nav>
+
+		<!-- drawer component -->
+		<div
+			id="drawer-navigation"
+			class="fixed top-0 left-0 z-40 h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white w-64 dark:bg-gray-800"
+			tabindex="-1"
+			aria-labelledby="drawer-navigation-label">
+			<h5
+				id="drawer-navigation-label"
+				class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
+				Menu
+			</h5>
+			<button
+				type="button"
+				data-drawer-hide="drawer-navigation"
+				aria-controls="drawer-navigation"
+				class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center dark:hover:bg-gray-600 dark:hover:text-white">
+				<svg
+					class="w-3 h-3"
+					aria-hidden="true"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 14 14">
+					<path
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+				</svg>
+				<span class="sr-only">Close menu</span>
+			</button>
+			<div class="py-4 overflow-y-auto">
+				<ul class="space-y-2 font-medium">
+					<li>
+						<a
+							href="/setting"
+							class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+							<svg
+								class="w-6 h-6 text-gray-800 dark:text-white"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								fill="currentColor"
+								viewBox="0 0 24 24">
+								<path
+									fill-rule="evenodd"
+									d="M17 10v1.126c.367.095.714.24 1.032.428l.796-.797 1.415 1.415-.797.796c.188.318.333.665.428 1.032H21v2h-1.126c-.095.367-.24.714-.428 1.032l.797.796-1.415 1.415-.796-.797a3.979 3.979 0 0 1-1.032.428V20h-2v-1.126a3.977 3.977 0 0 1-1.032-.428l-.796.797-1.415-1.415.797-.796A3.975 3.975 0 0 1 12.126 16H11v-2h1.126c.095-.367.24-.714.428-1.032l-.797-.796 1.415-1.415.796.797A3.977 3.977 0 0 1 15 11.126V10h2Zm.406 3.578.016.016c.354.358.574.85.578 1.392v.028a2 2 0 0 1-3.409 1.406l-.01-.012a2 2 0 0 1 2.826-2.83ZM5 8a4 4 0 1 1 7.938.703 7.029 7.029 0 0 0-3.235 3.235A4 4 0 0 1 5 8Zm4.29 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h6.101A6.979 6.979 0 0 1 9 15c0-.695.101-1.366.29-2Z"
+									clip-rule="evenodd" />
+							</svg>
+							<span class="ms-3">Setting</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="max-w-3xl mx-auto">
+			<!-- Tombol Aksi -->
+			<div class="flex flex-wrap justify-center gap-4 my-4">
+				<button
+					class="px-4 py-2 bg-teal-500 hover:bg-teal-600 rounded text-white"
+					onclick="clearChat()">
+					🗑 Hapus Chat
+				</button>
+				<button
+					class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+					onclick="broadcastMessage()">
+					📢 Broadcast Pesan
+				</button>
+			</div>
+
+			<!-- Chat Container <-->
+			<div class="">
+				<div
+					id="chat-container"
+					class="rounded-md bg-transparent border border-gray-900 mt-4 space-y-4"></div>
+			</div>
+		</div>
+
+		<footer class="bg-white rounded-lg shadow-sm m-4 dark:bg-gray-800">
+			<div
+				class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+				<span
+					class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
+					>© 2023
+					<a href="https://flowbite.com/" class="hover:underline"
+						>Flowbite™</a
+					>. All Rights Reserved.
+				</span>
+				<ul
+					class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+					<li>
+						<a href="#" class="hover:underline me-4 md:me-6"
+							>About</a
+						>
+					</li>
+					<li>
+						<a href="#" class="hover:underline me-4 md:me-6"
+							>Privacy Policy</a
+						>
+					</li>
+					<li>
+						<a href="#" class="hover:underline me-4 md:me-6"
+							>Licensing</a
+						>
+					</li>
+					<li>
+						<a href="#" class="hover:underline">Contact</a>
+					</li>
+				</ul>
+			</div>
+		</footer>
+		<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+		<script>
+			const socket = io("http://localhost:3000");
+
+			// Menerima chat baru
+			socket.on("newMessage", (data) => {
+				const chatContainer = document.getElementById("chat-container");
+				const chatBox = document.createElement("div");
+				chatBox.classList.add(
+					"bg-gray-800",
+					"p-4",
+					"rounded-lg",
+					"shadow-md",
+					"relative",
+					"flex",
+					"items-start",
+					"gap-3",
+				);
+
+				chatBox.innerHTML = `
+        <!-- Jika profileUrl ada, tampilkan gambar -->
+        ${
+			data.profileUrl
+				? `<img src="${data.profileUrl}" alt="Profile" class="w-10 h-10 rounded-full">`
+				: ""
+		}
+        <div>
+            <p class="text-sm text-gray-400">(${data.timestamp})</p>
+            <span class="font-bold text-green-400">${data.subject}</span> 
+            ${data.isGroup ? '<span class="text-gray-400">(Group)</span>' : ""}
+            <p class="mt-2">${data.message}</p>
+
+            <!-- Tombol Aksi -->
+            <div class="mt-3 flex gap-2">
+                <button onclick="reply('${data.sender}')"
+                    class="px-3 py-1 text-sm bg-teal-500 hover:bg-teal-600 rounded text-white">
+                    ✉️ Balas
+                </button>
+                <button onclick="deleteMessage(this)"
+                    class="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 rounded text-white">
+                    ❌ Hapus
+                </button>
+            </div>
+        </div>
+    `;
+
+				chatContainer.appendChild(chatBox);
+			});
+
+			// Menghapus chat saat di-trigger dari server
+			socket.on("clearChat", () => {
+				document.getElementById("chat-container").innerHTML = "";
+			});
+
+			// Fungsi untuk membalas pesan
+			function reply(sender) {
+				const replyMsg = prompt("Masukkan balasan:");
+				if (replyMsg) {
+					socket.emit("sendReply", {
+						sender,
+						message: replyMsg,
+					});
+				}
+			}
+
+			// Fungsi untuk menghapus pesan tertentu
+			function deleteMessage(element) {
+				element.parentElement.parentElement.remove();
+			}
+
+			// Fungsi untuk menghapus semua chat
+			function clearChat() {
+				if (confirm("Apakah Anda yakin ingin menghapus semua chat?")) {
+					socket.emit("clearChat");
+				}
+			}
+
+			// Fungsi untuk broadcast pesan ke semua pengguna
+			function broadcastMessage() {
+				const message = prompt("Masukkan pesan broadcast:");
+				if (message) {
+					socket.emit("broadcastMessage", message);
+				}
+			}
+		</script>
+	</body>
+</html>

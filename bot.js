@@ -8,6 +8,7 @@ import {
 	Browsers,
 	getContentType,
 } from "@fizzxydev/baileys-pro";
+import { io } from "./Dashboard/dashboard.js";
 import fs from "fs-extra";
 import ora from "ora";
 import chalk from "chalk";
@@ -83,7 +84,7 @@ async function loadCity() {
 }
 
 async function banner() {
-  console.clear();
+	console.clear();
 	cfonts.say("BRO-BOT", {
 		font: "block",
 		align: "center",
@@ -625,6 +626,28 @@ END:VCARD`;
 			);
 		};
 
+		let subject = isGroup
+			? (await sock.groupMetadata(sender)).subject
+			: sender;
+
+		let ppUrl;
+		try {
+			ppUrl = await sock.profilePictureUrl(sender, "image");
+		} catch (err) {
+			ppUrl = "";
+		}
+
+		const chatData = {
+			sender: sender,
+			subject,
+			profileUrl: ppUrl,
+			isGroup,
+			message: text,
+			timestamp: new Date().toLocaleString(),
+		};
+
+		io.emit("newMessage", chatData);
+
 		if (configAntiTag[sender]) {
 			try {
 				const groupMetadata = await sock.groupMetadata(sender);
@@ -840,6 +863,16 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 				console.error(`❌ Error di plugin ${plugin.command}:`, err);
 			}
 		}
+	});
+	io.on("connection", (socket) => {
+		socket.on("sendReply", async (data) => {
+			await sock.sendMessage(
+				data.sender || data.sender.participant === data.sender,
+				{
+					text: data.message,
+				},
+			);
+		});
 	});
 }
 
