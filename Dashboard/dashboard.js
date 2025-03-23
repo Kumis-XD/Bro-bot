@@ -32,7 +32,7 @@ app.get("/setting", (req, res) => {
 });
 
 // Menjalankan server di port 3000
-server.listen(3000, () => {
+server.listen(4000, () => {
 	console.log("🚀 Dashboard berjalan di http://localhost:3000");
 });
 

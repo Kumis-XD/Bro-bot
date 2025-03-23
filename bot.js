@@ -400,8 +400,7 @@ async function startBot() {
 						fileName: data.fileName || "audio.mp3",
 						caption:
 							data.caption ||
-							`🎵 *Audio Download*\n\n📌 *Judul:* ${
-								data.title || "Unknown"
+							`🎵 *Audio Download*\n\n📌 *Judul:* ${data.title || "Unknown"
 							}\n🔗 *Link:* ${data.url || "Unknown"}`,
 						contextInfo: { externalAdReply },
 					};
@@ -579,8 +578,9 @@ END:VCARD`;
 			msg.message?.templateButtonReplyMessage?.selectedId ||
 			msg.message?.buttonsResponseMessage?.selectedButtonId ||
 			msg.message?.interactiveResponseMessage
-				?.nativeFlowResponseMessage || // Gunakan hasil parse yang aman
-			"";
+				?.nativeFlowResponseMessage || "";
+		if (!text) return;
+
 		const quotd =
 			msg.message ||
 			msg.message?.groupStatusMentionMessage ||
@@ -604,14 +604,12 @@ END:VCARD`;
 			msg.message?.templateButtonReplyMessage?.selectedId ||
 			msg.message?.buttonsResponseMessage?.selectedButtonId ||
 			msg.message?.interactiveResponseMessage
-				?.nativeFlowResponseMessage ||
-			"";
+				?.nativeFlowResponseMessage || "";
 		let cmd =
 			msg.message?.templateButtonReplyMessage?.selectedId ||
 			msg.message?.buttonsResponseMessage?.selectedButtonId ||
 			msg.message?.interactiveResponseMessage
-				?.nativeFlowResponseMessage ||
-			"";
+				?.nativeFlowResponseMessage || "";
 
 		// Fungsi untuk mendeteksi link di dalam pesan
 		const containsLink = (text) => {
@@ -642,7 +640,7 @@ END:VCARD`;
 			subject,
 			profileUrl: ppUrl,
 			isGroup,
-			message: text,
+			message: text ? text : "",
 			timestamp: new Date().toLocaleString(),
 		};
 
@@ -817,7 +815,11 @@ ${chalk.white("✉️ Pesan:")} ${textStyled}`,
 			},
 		);
 
-		console.log(messageBox);
+		if (text === "") {
+			return;
+		} else {
+			console.log(messageBox);
+		}
 
 		for (const plugin of plugins) {
 			try {
